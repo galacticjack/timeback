@@ -14,6 +14,14 @@
 - **Auto-Play Mode** - Watch websites transform automatically
 - **Full Page View** - Open any snapshot in Wayback Machine
 
+### Comparison Features (NEW!)
+- **Side-by-Side View** - View two snapshots next to each other
+- **Slider Comparison** - Drag to reveal differences between versions
+- **Overlay Mode** - Fade between two snapshots with opacity control
+- **Visual Diff Mode** - Highlight changed areas with colored overlays
+- **Quick Compare** - Click "Compare" on any snapshot card
+- **Keyboard Shortcuts** - Tab to switch panels, 1-4 for view modes, ← → to navigate
+
 ### UX Features
 - **Keyboard Navigation** - Arrow keys to navigate, Space to play/pause
 - **Year Markers** - Timeline shows year indicators
@@ -104,8 +112,8 @@ Generates AI-powered insights about a website's evolution.
 
 ## Roadmap
 
-- [ ] Side-by-side comparison view
-- [ ] Visual diff highlighting
+- [x] Side-by-side comparison view ✅ (Feb 2026)
+- [x] Visual diff highlighting ✅ (Feb 2026)
 - [ ] Screenshot thumbnails
 - [ ] Share specific moments
 - [ ] Export timeline as video

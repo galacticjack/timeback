@@ -16,6 +16,11 @@ interface Snapshot {
 
 type ViewMode = 'rewind' | 'compare';
 
+interface CompareSelection {
+  snapshot1?: number;
+  snapshot2?: number;
+}
+
 export default function Home() {
   const [url, setUrl] = useState('');
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
@@ -25,6 +30,7 @@ export default function Home() {
   const [insights, setInsights] = useState<string | null>(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('rewind');
+  const [compareSelection, setCompareSelection] = useState<CompareSelection>({});
 
   const fetchSnapshots = async (searchUrl: string) => {
     setLoading(true);
@@ -39,37 +45,36 @@ export default function Home() {
         cleanUrl = cleanUrl.replace(/^(https?:\/\/)?/, '');
       }
       
-      // Fetch from Wayback Machine CDX API
-      const cdxUrl = `https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(cleanUrl)}&output=json&limit=50&filter=statuscode:200&collapse=timestamp:6`;
+      // Fetch from our API route (which proxies Wayback Machine CDX API)
+      const response = await fetch(`/api/snapshots?url=${encodeURIComponent(cleanUrl)}`);
       
-      const response = await fetch(cdxUrl);
-      if (!response.ok) throw new Error('Failed to fetch from Wayback Machine');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch snapshots');
+      }
       
       const data = await response.json();
       
-      if (data.length <= 1) {
+      if (!data.snapshots || data.snapshots.length === 0) {
         setError('No snapshots found for this URL. Try a popular website.');
         setLoading(false);
         return;
       }
       
-      // Skip header row, parse snapshots
-      const parsedSnapshots: Snapshot[] = data.slice(1).map((row: string[]) => {
-        const [urlkey, timestamp, original, mimetype, statuscode, digest, length] = row;
-        const year = timestamp.substring(0, 4);
-        const month = timestamp.substring(4, 6);
-        const day = timestamp.substring(6, 8);
-        
-        return {
-          timestamp,
-          url: original,
-          screenshotUrl: `https://web.archive.org/web/${timestamp}im_/${original}`,
-          date: new Date(`${year}-${month}-${day}`),
-        };
-      });
-      
-      // Sort by date descending (newest first)
-      parsedSnapshots.sort((a, b) => b.date.getTime() - a.date.getTime());
+      // Map API response to our Snapshot format
+      const parsedSnapshots: Snapshot[] = data.snapshots.map((snap: {
+        timestamp: string;
+        originalUrl: string;
+        screenshotUrl: string;
+        year: number;
+        month: number;
+        day: number;
+      }) => ({
+        timestamp: snap.timestamp,
+        url: snap.originalUrl,
+        screenshotUrl: snap.screenshotUrl,
+        date: new Date(`${snap.year}-${String(snap.month).padStart(2, '0')}-${String(snap.day).padStart(2, '0')}`),
+      }));
       
       setSnapshots(parsedSnapshots);
       setCurrentIndex(0);
@@ -207,7 +212,12 @@ export default function Home() {
           ) : (
             <ComparisonView 
               snapshots={snapshots}
-              onBack={() => setViewMode('rewind')}
+              onBack={() => {
+                setViewMode('rewind');
+                setCompareSelection({});
+              }}
+              initialSnapshot1={compareSelection.snapshot1}
+              initialSnapshot2={compareSelection.snapshot2}
             />
           )}
           
@@ -231,6 +241,15 @@ export default function Home() {
                   snapshot={snapshot}
                   isSelected={index === currentIndex}
                   onClick={() => setCurrentIndex(index)}
+                  index={index}
+                  onCompare={() => {
+                    // Compare current viewed snapshot with this one
+                    setCompareSelection({
+                      snapshot1: currentIndex,
+                      snapshot2: index
+                    });
+                    setViewMode('compare');
+                  }}
                 />
               ))}
             </div>
@@ -248,14 +267,14 @@ export default function Home() {
               description="Scrub through time with an intuitive slider. Watch websites transform before your eyes."
             />
             <FeatureCard 
+              icon="🔀"
+              title="Side-by-Side Compare"
+              description="Put two snapshots next to each other. Slide, overlay, or view side-by-side to spot every change."
+            />
+            <FeatureCard 
               icon="🧠"
               title="AI Insights"
               description="GPT-4 analyzes changes and explains what happened: redesigns, rebrands, pivots."
-            />
-            <FeatureCard 
-              icon="📊"
-              title="Design Trends"
-              description="See how web design evolved. Track industry trends through real examples."
             />
           </div>
           

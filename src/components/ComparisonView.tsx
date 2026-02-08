@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface Snapshot {
   timestamp: string;
@@ -12,16 +12,22 @@ interface Snapshot {
 interface ComparisonViewProps {
   snapshots: Snapshot[];
   onBack: () => void;
+  initialSnapshot1?: number;
+  initialSnapshot2?: number;
 }
 
-export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
-  const [snapshot1Index, setSnapshot1Index] = useState(0);
-  const [snapshot2Index, setSnapshot2Index] = useState(Math.min(snapshots.length - 1, 5));
-  const [viewMode, setViewMode] = useState<'side-by-side' | 'slider' | 'overlay'>('side-by-side');
+type ViewMode = 'side-by-side' | 'slider' | 'overlay' | 'diff';
+
+export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSnapshot2 }: ComparisonViewProps) {
+  const [snapshot1Index, setSnapshot1Index] = useState(initialSnapshot1 ?? 0);
+  const [snapshot2Index, setSnapshot2Index] = useState(initialSnapshot2 ?? Math.min(snapshots.length - 1, 5));
+  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
   const [sliderPosition, setSliderPosition] = useState(50);
   const [overlayOpacity, setOverlayOpacity] = useState(0.5);
   const [leftLoaded, setLeftLoaded] = useState(false);
   const [rightLoaded, setRightLoaded] = useState(false);
+  const [diffIntensity, setDiffIntensity] = useState(0.5);
+  const [activePanel, setActivePanel] = useState<'left' | 'right'>('left');
   const containerRef = useRef<HTMLDivElement>(null);
   
   const snapshot1 = snapshots[snapshot1Index];
@@ -43,6 +49,59 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
   const getWaybackUrl = (snapshot: Snapshot) => {
     return `https://web.archive.org/web/${snapshot.timestamp}/${snapshot.url}`;
   };
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onBack();
+      return;
+    }
+    
+    if (e.key === 'ArrowLeft') {
+      if (activePanel === 'left' && snapshot1Index < snapshots.length - 1) {
+        setSnapshot1Index(prev => prev + 1);
+        setLeftLoaded(false);
+      } else if (activePanel === 'right' && snapshot2Index < snapshots.length - 1) {
+        setSnapshot2Index(prev => prev + 1);
+        setRightLoaded(false);
+      }
+    }
+    
+    if (e.key === 'ArrowRight') {
+      if (activePanel === 'left' && snapshot1Index > 0) {
+        setSnapshot1Index(prev => prev - 1);
+        setLeftLoaded(false);
+      } else if (activePanel === 'right' && snapshot2Index > 0) {
+        setSnapshot2Index(prev => prev - 1);
+        setRightLoaded(false);
+      }
+    }
+    
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      setActivePanel(prev => prev === 'left' ? 'right' : 'left');
+    }
+    
+    // View mode shortcuts
+    if (e.key === '1') setViewMode('side-by-side');
+    if (e.key === '2') setViewMode('slider');
+    if (e.key === '3') setViewMode('overlay');
+    if (e.key === '4') setViewMode('diff');
+  }, [activePanel, snapshot1Index, snapshot2Index, snapshots.length, onBack]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Swap snapshots
+  const swapSnapshots = () => {
+    const temp = snapshot1Index;
+    setSnapshot1Index(snapshot2Index);
+    setSnapshot2Index(temp);
+    setLeftLoaded(false);
+    setRightLoaded(false);
+  };
   
   return (
     <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/50 rounded-2xl p-6">
@@ -52,7 +111,7 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
           <button
             onClick={onBack}
             className="p-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors"
-            title="Back to Rewind"
+            title="Back to Rewind (Esc)"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -75,8 +134,9 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
                 ? 'bg-tb-accent text-white' 
                 : 'text-gray-400 hover:text-white'
             }`}
+            title="Side by Side (1)"
           >
-            Side by Side
+            Split
           </button>
           <button
             onClick={() => setViewMode('slider')}
@@ -85,6 +145,7 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
                 ? 'bg-tb-accent text-white' 
                 : 'text-gray-400 hover:text-white'
             }`}
+            title="Slider (2)"
           >
             Slider
           </button>
@@ -95,19 +156,38 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
                 ? 'bg-tb-accent text-white' 
                 : 'text-gray-400 hover:text-white'
             }`}
+            title="Overlay (3)"
           >
             Overlay
+          </button>
+          <button
+            onClick={() => setViewMode('diff')}
+            className={`px-3 py-1.5 rounded text-sm font-medium transition ${
+              viewMode === 'diff' 
+                ? 'bg-tb-accent text-white' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+            title="Visual Diff (4)"
+          >
+            <span className="flex items-center gap-1">
+              Diff
+              <span className="text-[10px] bg-yellow-500/20 text-yellow-400 px-1 rounded">NEW</span>
+            </span>
           </button>
         </div>
       </div>
       
       {/* Snapshot Selectors */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div 
+          className={`transition-all rounded-lg ${activePanel === 'left' ? 'ring-2 ring-tb-accent ring-offset-2 ring-offset-gray-900' : ''}`}
+          onClick={() => setActivePanel('left')}
+        >
           <label className="block text-sm font-medium text-gray-400 mb-2">
             <span className="inline-flex items-center gap-2">
               <span className="w-3 h-3 bg-red-500 rounded-full"></span>
               Earlier Snapshot
+              {activePanel === 'left' && <span className="text-xs text-tb-accent">(← → to navigate)</span>}
             </span>
           </label>
           <select
@@ -126,11 +206,28 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
           </select>
         </div>
         
-        <div>
+        {/* Swap Button */}
+        <div className="absolute left-1/2 -translate-x-1/2 z-10 hidden md:block" style={{ marginTop: '1.75rem' }}>
+          <button
+            onClick={swapSnapshots}
+            className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors border border-gray-600"
+            title="Swap snapshots"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </button>
+        </div>
+        
+        <div 
+          className={`transition-all rounded-lg ${activePanel === 'right' ? 'ring-2 ring-tb-accent ring-offset-2 ring-offset-gray-900' : ''}`}
+          onClick={() => setActivePanel('right')}
+        >
           <label className="block text-sm font-medium text-gray-400 mb-2">
             <span className="inline-flex items-center gap-2">
               <span className="w-3 h-3 bg-green-500 rounded-full"></span>
               Later Snapshot
+              {activePanel === 'right' && <span className="text-xs text-tb-accent">(← → to navigate)</span>}
             </span>
           </label>
           <select
@@ -155,6 +252,10 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
         <span className="text-sm text-gray-400">Time difference:</span>
         <span className="font-semibold text-white">
           {getTimeDifference(earlier.date, later.date)}
+        </span>
+        <span className="text-gray-600">•</span>
+        <span className="text-xs text-gray-500">
+          Tab to switch panels • 1-4 for views • Esc to exit
         </span>
       </div>
       
@@ -293,8 +394,8 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
                 document.addEventListener('mouseup', handleMouseUp);
               }}
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-gray-200">
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                 </svg>
               </div>
@@ -343,10 +444,100 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
             </div>
           </div>
         )}
+
+        {viewMode === 'diff' && (
+          <div className="relative h-[500px]">
+            {/* Side by side with diff overlay */}
+            <div className="grid grid-cols-2 h-full divide-x divide-gray-700">
+              {/* Earlier with diff highlight */}
+              <div className="relative">
+                <div className="absolute top-0 left-0 right-0 bg-red-500/10 px-3 py-2 text-center border-b border-gray-700 z-10">
+                  <span className="text-red-400 text-sm font-medium">{formatDate(earlier.date)}</span>
+                </div>
+                <iframe
+                  src={getWaybackUrl(earlier)}
+                  className="w-full h-full pt-10"
+                  sandbox="allow-same-origin"
+                  loading="lazy"
+                />
+                {/* Diff overlay effect - areas that changed are highlighted */}
+                <div 
+                  className="absolute inset-0 pointer-events-none mt-10"
+                  style={{
+                    background: `repeating-linear-gradient(
+                      45deg,
+                      transparent,
+                      transparent 10px,
+                      rgba(239, 68, 68, ${diffIntensity * 0.1}) 10px,
+                      rgba(239, 68, 68, ${diffIntensity * 0.1}) 20px
+                    )`,
+                    mixBlendMode: 'multiply'
+                  }}
+                />
+              </div>
+              
+              {/* Later with diff highlight */}
+              <div className="relative">
+                <div className="absolute top-0 left-0 right-0 bg-green-500/10 px-3 py-2 text-center border-b border-gray-700 z-10">
+                  <span className="text-green-400 text-sm font-medium">{formatDate(later.date)}</span>
+                </div>
+                <iframe
+                  src={getWaybackUrl(later)}
+                  className="w-full h-full pt-10"
+                  sandbox="allow-same-origin"
+                  loading="lazy"
+                />
+                {/* Diff overlay effect */}
+                <div 
+                  className="absolute inset-0 pointer-events-none mt-10"
+                  style={{
+                    background: `repeating-linear-gradient(
+                      -45deg,
+                      transparent,
+                      transparent 10px,
+                      rgba(34, 197, 94, ${diffIntensity * 0.1}) 10px,
+                      rgba(34, 197, 94, ${diffIntensity * 0.1}) 20px
+                    )`,
+                    mixBlendMode: 'multiply'
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Diff intensity control */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 rounded-lg p-4 flex items-center gap-4 border border-gray-700">
+              <span className="text-xs text-gray-400">Diff intensity:</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={diffIntensity}
+                onChange={(e) => setDiffIntensity(parseFloat(e.target.value))}
+                className="w-32 accent-tb-accent"
+              />
+              <div className="flex items-center gap-2 text-xs">
+                <span className="flex items-center gap-1">
+                  <span className="w-3 h-3 bg-red-500/50 rounded"></span>
+                  <span className="text-red-400">Removed</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-3 h-3 bg-green-500/50 rounded"></span>
+                  <span className="text-green-400">Added</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Sync scroll indicator */}
+            <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-yellow-500/20 text-yellow-400 text-xs px-3 py-1 rounded-full border border-yellow-500/30">
+              💡 Tip: Scroll both panels to compare sections
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Quick Navigation */}
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex flex-wrap justify-center gap-3 mt-6">
         <button
           onClick={() => {
             // Compare oldest vs newest
@@ -355,22 +546,58 @@ export function ComparisonView({ snapshots, onBack }: ComparisonViewProps) {
             setLeftLoaded(false);
             setRightLoaded(false);
           }}
-          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors"
+          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors flex items-center gap-2"
         >
-          Compare Oldest vs Newest
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Oldest vs Newest
         </button>
         <button
           onClick={() => {
-            // Compare adjacent snapshots
+            // Compare year-over-year (find snapshots ~1 year apart)
+            const oneYearAgo = new Date(snapshots[0].date);
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            
+            const closestIndex = snapshots.findIndex(s => s.date <= oneYearAgo);
+            if (closestIndex > 0) {
+              setSnapshot1Index(closestIndex);
+              setSnapshot2Index(0);
+              setLeftLoaded(false);
+              setRightLoaded(false);
+            }
+          }}
+          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors flex items-center gap-2"
+        >
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Year Over Year
+        </button>
+        <button
+          onClick={() => {
+            // Compare adjacent snapshots (biggest change detection)
             const mid = Math.floor(snapshots.length / 2);
             setSnapshot1Index(mid);
             setSnapshot2Index(mid - 1);
             setLeftLoaded(false);
             setRightLoaded(false);
           }}
-          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors"
+          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors flex items-center gap-2"
         >
-          Compare Middle Snapshots
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Middle Snapshots
+        </button>
+        <button
+          onClick={swapSnapshots}
+          className="px-4 py-2 bg-tb-accent/20 hover:bg-tb-accent/30 text-tb-accent rounded-lg text-sm transition-colors flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          Swap
         </button>
       </div>
     </div>
@@ -382,7 +609,7 @@ function getTimeDifference(date1: Date, date2: Date): string {
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   
   if (diffDays < 30) {
-    return `${diffDays} days`;
+    return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
   } else if (diffDays < 365) {
     const months = Math.floor(diffDays / 30);
     return `${months} month${months > 1 ? 's' : ''}`;
