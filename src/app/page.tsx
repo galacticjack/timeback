@@ -68,6 +68,7 @@ export default function Home() {
         timestamp: string;
         originalUrl: string;
         screenshotUrl: string;
+        archiveUrl: string;
         year: number;
         month: number;
         day: number;
@@ -75,6 +76,7 @@ export default function Home() {
         timestamp: snap.timestamp,
         url: snap.originalUrl,
         screenshotUrl: snap.screenshotUrl,
+        archiveUrl: snap.archiveUrl,
         date: new Date(`${snap.year}-${String(snap.month).padStart(2, '0')}-${String(snap.day).padStart(2, '0')}`),
       }));
       
