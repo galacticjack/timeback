@@ -42,10 +42,11 @@ export function getScreenshotUrl(timestamp: string, originalUrl: string): string
 }
 
 // Fetch with retry logic for 429 rate limiting
-async function fetchWithRetry(url: string, maxRetries: number = 3): Promise<Response> {
+async function fetchWithRetry(url: string, maxRetries: number = 2): Promise<Response> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000)
+    // 25s timeout to stay within Vercel's 30s function limit
+    const timeoutId = setTimeout(() => controller.abort(), 25000)
     
     let response: Response
     try {
@@ -58,7 +59,12 @@ async function fetchWithRetry(url: string, maxRetries: number = 3): Promise<Resp
     } catch (err) {
       clearTimeout(timeoutId)
       if (err instanceof Error && err.name === 'AbortError') {
-        throw new Error('Wayback Machine API timed out. Please try again.')
+        if (attempt < maxRetries) {
+          // Retry once on timeout
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          continue
+        }
+        throw new Error('The Wayback Machine is responding slowly. Please try again in a moment.')
       }
       throw err
     } finally {
@@ -66,7 +72,7 @@ async function fetchWithRetry(url: string, maxRetries: number = 3): Promise<Resp
     }
     
     if (response.status === 429 && attempt < maxRetries) {
-      // Wait with exponential backoff: 2s, 4s, 8s
+      // Wait with exponential backoff: 2s, 4s
       const waitMs = Math.pow(2, attempt + 1) * 1000
       await new Promise(resolve => setTimeout(resolve, waitMs))
       continue
@@ -79,7 +85,7 @@ async function fetchWithRetry(url: string, maxRetries: number = 3): Promise<Resp
 }
 
 // Fetch snapshots from CDX API
-export async function fetchSnapshots(url: string, limit: number = 50): Promise<Snapshot[]> {
+export async function fetchSnapshots(url: string, limit: number = 30): Promise<Snapshot[]> {
   const normalized = normalizeUrl(url)
   
   // CDX API endpoint — collapse by month (timestamp:6) to reduce results and avoid rate limits

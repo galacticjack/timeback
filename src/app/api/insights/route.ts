@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analysisCache } from '@/lib/cache';
 
+export const maxDuration = 30;
+
 export async function POST(request: NextRequest) {
   try {
     const { url, snapshotCount, dateRange } = await request.json();

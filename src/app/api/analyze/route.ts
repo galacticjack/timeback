@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { analysisCache } from '@/lib/cache'
 
+export const maxDuration = 30
+
 export interface AnalysisResult {
   summary: string;
   keyChanges: string[];
