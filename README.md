@@ -14,13 +14,21 @@
 - **Auto-Play Mode** - Watch websites transform automatically
 - **Full Page View** - Open any snapshot in Wayback Machine
 
-### Comparison Features (NEW!)
+### Comparison Features
 - **Side-by-Side View** - View two snapshots next to each other
 - **Slider Comparison** - Drag to reveal differences between versions
 - **Overlay Mode** - Fade between two snapshots with opacity control
 - **Visual Diff Mode** - Highlight changed areas with colored overlays
 - **Quick Compare** - Click "Compare" on any snapshot card
 - **Keyboard Shortcuts** - Tab to switch panels, 1-4 for view modes, ← → to navigate
+
+### AI Analysis (NEW!)
+- **Enhanced AI Prompts** - Actionable insights, not just descriptions
+- **Sentiment Trend Visualization** - See how design tone evolved (professional → playful, etc)
+- **Export Reports** - Download analysis as Markdown, HTML, or print to PDF
+- **Smart Caching** - AI results cached to avoid redundant API calls
+- **Fun Facts While Loading** - Domain-specific trivia about popular websites
+- **Collapsible Analysis Sections** - Design, Content, Business insights organized
 
 ### UX Features
 - **Keyboard Navigation** - Arrow keys to navigate, Space to play/pause
@@ -134,6 +142,10 @@ Generates AI-powered insights about a website's evolution.
 
 - [x] Side-by-side comparison view ✅ (Feb 2026)
 - [x] Visual diff highlighting ✅ (Feb 2026)
+- [x] Enhanced AI insights with sentiment analysis ✅ (Feb 2026)
+- [x] Export reports (Markdown/HTML/PDF) ✅ (Feb 2026)
+- [x] AI result caching ✅ (Feb 2026)
+- [x] Fun facts during loading ✅ (Feb 2026)
 - [ ] Screenshot thumbnails
 - [ ] Share specific moments
 - [ ] Export timeline as video
