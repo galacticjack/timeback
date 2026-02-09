@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { VisualRewind } from '@/components/VisualRewind';
 import { AIInsights } from '@/components/AIInsights';
 import { SnapshotCard } from '@/components/SnapshotCard';
 import { ComparisonView } from '@/components/ComparisonView';
 import { ImageZoomModal } from '@/components/ImageZoomModal';
+import { PopularSites } from '@/components/PopularSites';
+import { useShareUrl } from '@/hooks/useShareUrl';
 
 interface Snapshot {
   timestamp: string;
@@ -33,6 +35,86 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>('rewind');
   const [compareSelection, setCompareSelection] = useState<CompareSelection>({});
   const [zoomSnapshot, setZoomSnapshot] = useState<Snapshot | null>(null);
+  const [showShareToast, setShowShareToast] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+
+  const { parseUrl, updateUrl, copyShareUrl } = useShareUrl();
+
+  // Parse URL params on mount
+  useEffect(() => {
+    const state = parseUrl();
+    if (state.url) {
+      fetchSnapshots(state.url).then(() => {
+        if (state.snapshot1 !== undefined) setCurrentIndex(state.snapshot1);
+        if (state.viewMode === 'compare' && state.snapshot1 !== undefined && state.snapshot2 !== undefined) {
+          setCompareSelection({
+            snapshot1: state.snapshot1,
+            snapshot2: state.snapshot2,
+          });
+          setViewMode('compare');
+        }
+      });
+    }
+    setInitialized(true);
+  }, []);
+
+  // Update URL when state changes
+  useEffect(() => {
+    if (!initialized || !url) return;
+    
+    updateUrl({
+      url,
+      snapshot1: viewMode === 'compare' ? compareSelection.snapshot1 : currentIndex,
+      snapshot2: viewMode === 'compare' ? compareSelection.snapshot2 : undefined,
+      viewMode,
+    });
+  }, [url, currentIndex, viewMode, compareSelection, initialized, updateUrl]);
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === 'Escape' && zoomSnapshot) {
+        setZoomSnapshot(null);
+        return;
+      }
+
+      if (e.key === 'Escape' && viewMode === 'compare') {
+        setViewMode('rewind');
+        setCompareSelection({});
+        return;
+      }
+
+      // Arrow key navigation in rewind mode
+      if (viewMode === 'rewind' && snapshots.length > 0) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setCurrentIndex(prev => Math.max(0, prev - 1));
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setCurrentIndex(prev => Math.min(snapshots.length - 1, prev + 1));
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          setCurrentIndex(snapshots.length - 1); // Oldest
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          setCurrentIndex(0); // Newest
+        }
+      }
+
+      // Quick mode toggle
+      if (e.key === 'c' && !e.metaKey && !e.ctrlKey && snapshots.length > 0) {
+        setViewMode(prev => prev === 'rewind' ? 'compare' : 'rewind');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [snapshots.length, viewMode, zoomSnapshot]);
 
   const fetchSnapshots = async (searchUrl: string) => {
     setLoading(true);
@@ -41,13 +123,11 @@ export default function Home() {
     setInsights(null);
     
     try {
-      // Clean URL
       let cleanUrl = searchUrl.trim();
       if (!cleanUrl.startsWith('http')) {
         cleanUrl = cleanUrl.replace(/^(https?:\/\/)?/, '');
       }
       
-      // Fetch from our API route (which proxies Wayback Machine CDX API)
       const response = await fetch(`/api/snapshots?url=${encodeURIComponent(cleanUrl)}`);
       
       if (!response.ok) {
@@ -63,12 +143,10 @@ export default function Home() {
         return;
       }
       
-      // Map API response to our Snapshot format
       const parsedSnapshots: Snapshot[] = data.snapshots.map((snap: {
         timestamp: string;
         originalUrl: string;
         screenshotUrl: string;
-        archiveUrl: string;
         year: number;
         month: number;
         day: number;
@@ -76,7 +154,6 @@ export default function Home() {
         timestamp: snap.timestamp,
         url: snap.originalUrl,
         screenshotUrl: snap.screenshotUrl,
-        archiveUrl: snap.archiveUrl,
         date: new Date(`${snap.year}-${String(snap.month).padStart(2, '0')}-${String(snap.day).padStart(2, '0')}`),
       }));
       
@@ -122,21 +199,35 @@ export default function Home() {
     }
   };
 
+  const handleShare = useCallback(async () => {
+    const success = await copyShareUrl({
+      url,
+      snapshot1: viewMode === 'compare' ? compareSelection.snapshot1 : currentIndex,
+      snapshot2: viewMode === 'compare' ? compareSelection.snapshot2 : undefined,
+      viewMode,
+    });
+    
+    if (success) {
+      setShowShareToast(true);
+      setTimeout(() => setShowShareToast(false), 2000);
+    }
+  }, [url, currentIndex, viewMode, compareSelection, copyShareUrl]);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-tb-dark via-tb-darker to-black">
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 pt-16 pb-8">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-tb-accent/10 border border-tb-accent/30 rounded-full px-4 py-1.5 mb-6">
+      <div className="max-w-6xl mx-auto px-4 pt-12 md:pt-16 pb-6 md:pb-8">
+        <div className="text-center mb-8 md:mb-12">
+          <div className="inline-flex items-center gap-2 bg-tb-accent/10 border border-tb-accent/30 rounded-full px-3 md:px-4 py-1.5 mb-4 md:mb-6">
             <span className="w-2 h-2 bg-tb-accent rounded-full animate-pulse"></span>
-            <span className="text-tb-accent text-sm font-medium">Visual Time Machine</span>
+            <span className="text-tb-accent text-xs md:text-sm font-medium">Visual Time Machine</span>
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
             Rewind Any Website
           </h1>
           
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-6 md:mb-8 px-4">
             Watch websites evolve through time with a visual timeline. 
             <span className="text-tb-accent"> AI-powered insights</span> reveal what changed and why it matters.
           </p>
@@ -146,40 +237,74 @@ export default function Home() {
           {error && (
             <p className="mt-4 text-red-400 text-sm">{error}</p>
           )}
+          
+          {/* Keyboard shortcuts hint - desktop only */}
+          <div className="hidden md:flex items-center justify-center gap-6 mt-6 text-xs text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">←</kbd>
+              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">→</kbd>
+              Navigate
+            </span>
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">Space</kbd>
+              Play/Pause
+            </span>
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">C</kbd>
+              Compare Mode
+            </span>
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">Esc</kbd>
+              Exit
+            </span>
+          </div>
         </div>
       </div>
       
       {/* Results Section */}
       {snapshots.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 pb-20">
+        <div className="max-w-7xl mx-auto px-4 pb-16 md:pb-20">
           {/* Stats Bar with Mode Toggle */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-4 md:gap-8 text-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+            <div className="flex items-center gap-3 md:gap-4 lg:gap-8 text-sm w-full sm:w-auto justify-between sm:justify-start">
               <div className="text-center">
-                <div className="text-xl md:text-2xl font-bold text-white">{snapshots.length}</div>
+                <div className="text-lg md:text-xl lg:text-2xl font-bold text-white">{snapshots.length}</div>
                 <div className="text-gray-500 text-xs md:text-sm">Snapshots</div>
               </div>
-              <div className="w-px h-8 bg-gray-700"></div>
+              <div className="w-px h-8 bg-gray-700 hidden sm:block"></div>
               <div className="text-center">
-                <div className="text-xl md:text-2xl font-bold text-white">
+                <div className="text-lg md:text-xl lg:text-2xl font-bold text-white">
                   {snapshots[snapshots.length - 1].date.getFullYear()}
                 </div>
                 <div className="text-gray-500 text-xs md:text-sm">Oldest</div>
               </div>
-              <div className="w-px h-8 bg-gray-700"></div>
+              <div className="w-px h-8 bg-gray-700 hidden sm:block"></div>
               <div className="text-center">
-                <div className="text-xl md:text-2xl font-bold text-white">
+                <div className="text-lg md:text-xl lg:text-2xl font-bold text-white">
                   {snapshots[0].date.getFullYear()}
                 </div>
                 <div className="text-gray-500 text-xs md:text-sm">Newest</div>
               </div>
+              
+              {/* Share Button */}
+              <div className="sm:ml-auto">
+                <button
+                  onClick={handleShare}
+                  className="p-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors"
+                  title="Copy share link"
+                >
+                  <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </button>
+              </div>
             </div>
             
             {/* Mode Toggle */}
-            <div className="flex items-center gap-2 bg-gray-800/50 rounded-xl p-1.5">
+            <div className="flex items-center gap-2 bg-gray-800/50 rounded-xl p-1.5 w-full sm:w-auto justify-center sm:justify-start">
               <button
                 onClick={() => setViewMode('rewind')}
-                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none justify-center ${
                   viewMode === 'rewind'
                     ? 'bg-tb-accent text-white shadow-lg shadow-tb-accent/25'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
@@ -188,11 +313,11 @@ export default function Home() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="hidden sm:inline">Rewind</span>
+                <span>Rewind</span>
               </button>
               <button
                 onClick={() => setViewMode('compare')}
-                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none justify-center ${
                   viewMode === 'compare'
                     ? 'bg-tb-accent text-white shadow-lg shadow-tb-accent/25'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
@@ -201,7 +326,7 @@ export default function Home() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                 </svg>
-                <span className="hidden sm:inline">Compare</span>
+                <span>Compare</span>
               </button>
             </div>
           </div>
@@ -226,7 +351,7 @@ export default function Home() {
           )}
           
           {/* AI Insights */}
-          <div className="mt-12">
+          <div className="mt-8 md:mt-12">
             <AIInsights 
               insights={insights}
               loading={insightsLoading}
@@ -237,39 +362,46 @@ export default function Home() {
           </div>
           
           {/* Snapshot Grid */}
-          <div className="mt-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-300">All Snapshots</h2>
-              <span className="text-sm text-gray-500">
+          <div className="mt-8 md:mt-12">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-300">All Snapshots</h2>
+              <span className="text-xs md:text-sm text-gray-500">
                 Showing {Math.min(20, snapshots.length)} of {snapshots.length}
               </span>
             </div>
             
-            {/* Responsive grid - fewer columns on mobile */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
-              {snapshots.slice(0, 20).map((snapshot, index) => (
-                <SnapshotCard
-                  key={snapshot.timestamp}
-                  snapshot={snapshot}
-                  isSelected={index === currentIndex}
-                  onClick={() => setCurrentIndex(index)}
-                  index={index}
-                  onZoom={() => setZoomSnapshot(snapshot)}
-                  onCompare={() => {
-                    // Compare current viewed snapshot with this one
-                    setCompareSelection({
-                      snapshot1: currentIndex,
-                      snapshot2: index
-                    });
-                    setViewMode('compare');
-                  }}
-                />
-              ))}
+            {/* Mobile: horizontal scroll. Desktop: grid */}
+            <div className="relative">
+              {/* Fade hints on mobile */}
+              <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-tb-dark to-transparent pointer-events-none z-10 md:hidden" />
+              <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-tb-dark to-transparent pointer-events-none z-10 md:hidden" />
+              
+              {/* Scrollable on mobile, grid on desktop */}
+              <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 overflow-x-auto pb-4 md:pb-0 scrollbar-hide snap-x snap-mandatory md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
+                {snapshots.slice(0, 20).map((snapshot, index) => (
+                  <div key={snapshot.timestamp} className="flex-shrink-0 w-[140px] md:w-auto snap-center">
+                    <SnapshotCard
+                      snapshot={snapshot}
+                      isSelected={index === currentIndex}
+                      onClick={() => setCurrentIndex(index)}
+                      index={index}
+                      onZoom={() => setZoomSnapshot(snapshot)}
+                      onCompare={() => {
+                        setCompareSelection({
+                          snapshot1: currentIndex,
+                          snapshot2: index
+                        });
+                        setViewMode('compare');
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Load more button if there are more snapshots */}
+            {/* Load more indicator */}
             {snapshots.length > 20 && (
-              <div className="mt-8 text-center">
+              <div className="mt-6 md:mt-8 text-center">
                 <p className="text-gray-500 text-sm mb-2">
                   {snapshots.length - 20} more snapshots available
                 </p>
@@ -282,10 +414,11 @@ export default function Home() {
         </div>
       )}
       
-      {/* Features Section (shown when no results) */}
+      {/* Empty State with Popular Sites */}
       {snapshots.length === 0 && !loading && (
-        <div className="max-w-5xl mx-auto px-4 pb-20">
-          <div className="grid md:grid-cols-3 gap-6">
+        <div className="max-w-5xl mx-auto px-4 pb-16 md:pb-20">
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
             <FeatureCard 
               icon="⏪"
               title="Visual Rewind"
@@ -303,29 +436,16 @@ export default function Home() {
             />
           </div>
           
-          {/* Example URLs */}
-          <div className="mt-12 text-center">
-            <p className="text-gray-500 mb-4">Try these popular sites:</p>
-            <div className="flex flex-wrap justify-center gap-2 md:gap-3">
-              {['apple.com', 'google.com', 'amazon.com', 'twitter.com', 'facebook.com'].map(site => (
-                <button
-                  key={site}
-                  onClick={() => fetchSnapshots(site)}
-                  className="px-3 md:px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors"
-                >
-                  {site}
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Popular Sites */}
+          <PopularSites onSelect={fetchSnapshots} loading={loading} />
         </div>
       )}
       
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-8 text-center text-gray-500 text-sm px-4">
+      <footer className="border-t border-gray-800 py-6 md:py-8 text-center text-gray-500 text-sm px-4">
         <p>Built with the Wayback Machine API. Powered by AI insights.</p>
-        <p className="mt-2 text-xs text-gray-600">
-          Tip: Click any snapshot to zoom in. Use +/- to adjust zoom level.
+        <p className="mt-2 text-xs text-gray-600 hidden md:block">
+          Tip: Use keyboard shortcuts for faster navigation. Press <kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-400 font-mono text-[10px]">?</kbd> for help.
         </p>
       </footer>
 
@@ -334,15 +454,25 @@ export default function Home() {
         snapshot={zoomSnapshot} 
         onClose={() => setZoomSnapshot(null)} 
       />
+
+      {/* Share Toast */}
+      {showShareToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          Link copied to clipboard!
+        </div>
+      )}
     </main>
   );
 }
 
 function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
   return (
-    <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 border border-gray-700/50 rounded-xl p-6 hover:border-tb-accent/30 transition-colors">
-      <div className="text-3xl mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
+    <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 border border-gray-700/50 rounded-xl p-5 md:p-6 hover:border-tb-accent/30 transition-colors">
+      <div className="text-2xl md:text-3xl mb-3 md:mb-4">{icon}</div>
+      <h3 className="text-base md:text-lg font-semibold mb-2 text-white">{title}</h3>
       <p className="text-gray-400 text-sm">{description}</p>
     </div>
   );
