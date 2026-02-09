@@ -69,6 +69,26 @@ npm run build
 npm start
 ```
 
+### Deploy to Vercel
+
+**One-Click Deploy:**
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/galacticjack/timeback)
+
+**Manual Deploy:**
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy
+vercel --prod
+```
+
+**Environment Variables (Optional):**
+- `OPENAI_API_KEY` - For AI-powered insights (app works without it)
+
 ## API Routes
 
 ### `/api/insights`

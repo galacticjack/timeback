@@ -54,7 +54,21 @@ export async function fetchSnapshots(url: string, limit: number = 100): Promise<
   cdxUrl.searchParams.set('collapse', 'timestamp:8') // One per day (first 8 chars = YYYYMMDD)
   cdxUrl.searchParams.set('fl', 'timestamp,original,mimetype,statuscode') // Fields to return
   
-  const response = await fetch(cdxUrl.toString())
+  // Add timeout for slow Wayback Machine API
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+  
+  let response: Response
+  try {
+    response = await fetch(cdxUrl.toString(), { signal: controller.signal })
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error('Wayback Machine API timed out. Please try again.')
+    }
+    throw err
+  } finally {
+    clearTimeout(timeoutId)
+  }
   
   if (!response.ok) {
     throw new Error(`Wayback Machine API error: ${response.status}`)
