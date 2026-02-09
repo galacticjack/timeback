@@ -13,3 +13,4 @@ export { BiggestChanges } from './BiggestChanges';
 export { SocialShare } from './SocialShare';
 export { UseCases, Testimonials } from './UseCases';
 export { Analytics, ViewCounter, useAnalytics } from './Analytics';
+export { default as ArchiveFrame } from './ArchiveFrame';

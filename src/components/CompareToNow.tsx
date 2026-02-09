@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import ArchiveFrame from './ArchiveFrame';
 
 interface Snapshot {
   timestamp: string;
   url: string;
   screenshotUrl: string;
+  archiveUrl?: string;
+  originalUrl?: string;
   date: Date;
 }
 
@@ -53,7 +56,7 @@ export function CompareToNow({ snapshots, url, onCompare }: CompareToNowProps) {
         
         <button
           onClick={() => onCompare(snapshots.length - 1)}
-          className="bg-gradient-to-r from-purple-500 to-tb-accent hover:from-purple-600 hover:to-indigo-600 text-white font-medium py-3 px-6 rounded-xl transition-all shadow-lg shadow-purple-500/25 flex items-center gap-2 justify-center"
+          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-all shadow-lg shadow-purple-500/25 flex items-center gap-2 justify-center"
         >
           <span>Compare Now</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,20 +71,20 @@ export function CompareToNow({ snapshots, url, onCompare }: CompareToNowProps) {
             <div className="absolute top-0 left-0 right-0 bg-purple-100 text-purple-700 text-xs py-1 px-2 text-center z-10">
               {formatDate(oldest.date)}
             </div>
-            <img 
-              src={oldest.screenshotUrl} 
+            <ArchiveFrame
+              src={oldest.screenshotUrl}
               alt={`${url} in ${oldest.date.getFullYear()}`}
-              className="w-full aspect-video object-cover object-top opacity-80"
+              className="w-full aspect-video"
             />
           </div>
           <div className="relative rounded-lg overflow-hidden border border-cyan-200">
             <div className="absolute top-0 left-0 right-0 bg-cyan-100 text-cyan-700 text-xs py-1 px-2 text-center z-10">
               {formatDate(newest.date)}
             </div>
-            <img 
-              src={newest.screenshotUrl} 
+            <ArchiveFrame
+              src={newest.screenshotUrl}
               alt={`${url} in ${newest.date.getFullYear()}`}
-              className="w-full aspect-video object-cover object-top"
+              className="w-full aspect-video"
             />
           </div>
         </div>

@@ -35,10 +35,10 @@ export function getArchiveUrl(timestamp: string, originalUrl: string): string {
   return `https://web.archive.org/web/${timestamp}/${originalUrl}`
 }
 
-// Get screenshot URL (uses Wayback Machine's built-in screenshot feature)
+// Get screenshot URL - uses if_ modifier for raw page (no Wayback toolbar)
+// This returns HTML suitable for iframe embedding, not an image
 export function getScreenshotUrl(timestamp: string, originalUrl: string): string {
-  // Wayback Machine has a screenshot endpoint
-  return `https://web.archive.org/web/${timestamp}im_/${originalUrl}`
+  return `https://web.archive.org/web/${timestamp}if_/${originalUrl}`
 }
 
 // Fetch with retry logic for 429 rate limiting
