@@ -1,13 +1,48 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
+import { getRandomFact, type WebsiteFact } from '@/lib/websiteFacts';
+
 interface AIInsightsProps {
   insights: string | null;
   loading: boolean;
   onGenerate: () => void;
   disabled: boolean;
+  url?: string;
 }
 
-export function AIInsights({ insights, loading, onGenerate, disabled }: AIInsightsProps) {
+export function AIInsights({ insights, loading, onGenerate, disabled, url = '' }: AIInsightsProps) {
+  const [currentFact, setCurrentFact] = useState<WebsiteFact | null>(null);
+  const [factIndex, setFactIndex] = useState(0);
+
+  // Rotate facts during loading
+  useEffect(() => {
+    if (!loading || !url) return;
+
+    // Set initial fact
+    setCurrentFact(getRandomFact(url));
+    setFactIndex(0);
+
+    // Rotate every 4 seconds
+    const interval = setInterval(() => {
+      setCurrentFact(getRandomFact(url));
+      setFactIndex(prev => prev + 1);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [loading, url]);
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'history': return '📜';
+      case 'design': return '🎨';
+      case 'tech': return '⚙️';
+      case 'business': return '💰';
+      case 'fun': return '🎉';
+      default: return '💡';
+    }
+  };
+
   return (
     <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
@@ -49,13 +84,41 @@ export function AIInsights({ insights, loading, onGenerate, disabled }: AIInsigh
         )}
       </div>
       
+      {/* Loading State with Facts */}
+      {loading && currentFact && (
+        <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">{getCategoryIcon(currentFact.category)}</span>
+            <div className="flex-1">
+              <p className="text-gray-300 text-sm leading-relaxed">
+                {currentFact.fact}
+              </p>
+              {currentFact.year && (
+                <p className="text-gray-500 text-xs mt-1">— {currentFact.year}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
+            <span className="flex gap-1">
+              {[0, 1, 2].map(i => (
+                <span 
+                  key={i} 
+                  className={`w-1.5 h-1.5 rounded-full ${i === factIndex % 3 ? 'bg-purple-500' : 'bg-gray-700'}`}
+                />
+              ))}
+            </span>
+            <span>Did you know?</span>
+          </div>
+        </div>
+      )}
+      
       {insights ? (
         <div className="prose prose-invert max-w-none">
           <div className="bg-gray-800/50 rounded-xl p-4 text-gray-300 leading-relaxed whitespace-pre-wrap">
             {insights}
           </div>
         </div>
-      ) : (
+      ) : !loading && (
         <div className="text-gray-400 text-sm">
           <p>Click "Generate Insights" to get AI-powered analysis of this website's evolution, including:</p>
           <ul className="mt-2 space-y-1 ml-4">

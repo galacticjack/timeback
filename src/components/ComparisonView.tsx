@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { ComparisonAnalysis } from './ComparisonAnalysis';
 
 interface Snapshot {
   timestamp: string;
@@ -600,6 +601,15 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
           Swap
         </button>
       </div>
+
+      {/* AI Comparison Analysis */}
+      <ComparisonAnalysis
+        url={earlier.url}
+        earlierDate={formatDate(earlier.date)}
+        laterDate={formatDate(later.date)}
+        archiveUrl1={getWaybackUrl(earlier)}
+        archiveUrl2={getWaybackUrl(later)}
+      />
     </div>
   );
 }

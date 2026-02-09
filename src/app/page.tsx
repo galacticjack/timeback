@@ -230,6 +230,7 @@ export default function Home() {
               loading={insightsLoading}
               onGenerate={generateInsights}
               disabled={snapshots.length < 2}
+              url={url}
             />
           </div>
           
