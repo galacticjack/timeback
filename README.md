@@ -20,15 +20,26 @@
 - **Overlay Mode** - Fade between two snapshots with opacity control
 - **Visual Diff Mode** - Highlight changed areas with colored overlays
 - **Quick Compare** - Click "Compare" on any snapshot card
+- **Compare to Now** - Instant comparison between oldest and latest snapshots
 - **Keyboard Shortcuts** - Tab to switch panels, 1-4 for view modes, ← → to navigate
 
-### AI Analysis (NEW!)
+### AI Analysis
 - **Enhanced AI Prompts** - Actionable insights, not just descriptions
-- **Sentiment Trend Visualization** - See how design tone evolved (professional → playful, etc)
+- **Sentiment Trend Visualization** - See how design tone evolved
+- **Biggest Changes Detection** - AI-detected most significant evolution moments
 - **Export Reports** - Download analysis as Markdown, HTML, or print to PDF
 - **Smart Caching** - AI results cached to avoid redundant API calls
 - **Fun Facts While Loading** - Domain-specific trivia about popular websites
 - **Collapsible Analysis Sections** - Design, Content, Business insights organized
+
+### Growth Features (NEW!)
+- **Email Capture** - "Get notified when this site changes" subscription
+- **Social Sharing** - Share comparisons on Twitter/X, LinkedIn, Reddit
+- **OG Image Previews** - Rich social sharing cards with snapshot previews
+- **Landing Page Content** - Use cases, testimonials, and stats
+- **SEO Optimization** - Full meta tags, structured data (JSON-LD), robots.txt
+- **Analytics** - Simple page view tracking (extensible for GA/Plausible)
+- **View Counter** - See how many people have explored the site
 
 ### UX Features
 - **Keyboard Navigation** - Arrow keys to navigate, Space to play/pause, C for compare mode
@@ -45,6 +56,15 @@
 - **Responsive** - Works on desktop and mobile
 - **Smooth Animations** - Polished transitions throughout
 - **Modern Stack** - Next.js 14, React 18, Tailwind CSS, TypeScript
+
+## Use Cases
+
+- **Competitive Research** - Track how competitors evolved their messaging, pricing, and features
+- **Design Inspiration** - Study how top brands refined their design language
+- **Historical Research** - Document the evolution of companies and organizations
+- **Legal & Compliance** - Verify historical claims and track policy changes
+- **Education & Training** - Teach web design evolution with real examples
+- **Due Diligence** - Research acquisitions by examining digital footprints over time
 
 ## Getting Started
 
@@ -98,6 +118,8 @@ vercel --prod
 
 **Environment Variables (Optional):**
 - `OPENAI_API_KEY` - For AI-powered insights (app works without it)
+- `NEXT_PUBLIC_SITE_URL` - Production URL for SEO (defaults to timeback.app)
+- `NEXT_PUBLIC_GA_ID` - Google Analytics ID (optional)
 
 ## API Routes
 
@@ -115,6 +137,12 @@ Generates AI-powered insights about a website's evolution.
   }
 }
 ```
+
+### `/api/snapshots`
+Fetches available snapshots from the Wayback Machine.
+
+**GET** params:
+- `url` - Website URL to look up
 
 ## How It Works
 
@@ -147,15 +175,22 @@ Generates AI-powered insights about a website's evolution.
 
 ## Roadmap
 
-- [x] Side-by-side comparison view ✅ (Feb 2026)
-- [x] Visual diff highlighting ✅ (Feb 2026)
-- [x] Enhanced AI insights with sentiment analysis ✅ (Feb 2026)
-- [x] Export reports (Markdown/HTML/PDF) ✅ (Feb 2026)
-- [x] AI result caching ✅ (Feb 2026)
-- [x] Fun facts during loading ✅ (Feb 2026)
-- [x] URL sharing / deep links ✅ (Feb 2026)
-- [x] Mobile responsive + touch support ✅ (Feb 2026)
-- [x] Popular sites showcase ✅ (Feb 2026)
+- [x] Side-by-side comparison view ✅
+- [x] Visual diff highlighting ✅
+- [x] Enhanced AI insights with sentiment analysis ✅
+- [x] Export reports (Markdown/HTML/PDF) ✅
+- [x] AI result caching ✅
+- [x] Fun facts during loading ✅
+- [x] URL sharing / deep links ✅
+- [x] Mobile responsive + touch support ✅
+- [x] Popular sites showcase ✅
+- [x] Email capture / notifications ✅
+- [x] Social sharing cards ✅
+- [x] Compare to Now feature ✅
+- [x] Biggest changes detection ✅
+- [x] Landing page content ✅
+- [x] SEO optimization ✅
+- [x] Analytics tracking ✅
 - [ ] Screenshot thumbnails
 - [ ] Export timeline as video
 - [ ] Browser extension

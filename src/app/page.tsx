@@ -8,6 +8,12 @@ import { SnapshotCard } from '@/components/SnapshotCard';
 import { ComparisonView } from '@/components/ComparisonView';
 import { ImageZoomModal } from '@/components/ImageZoomModal';
 import { PopularSites } from '@/components/PopularSites';
+import { EmailCapture } from '@/components/EmailCapture';
+import { CompareToNow } from '@/components/CompareToNow';
+import { BiggestChanges } from '@/components/BiggestChanges';
+import { SocialShare } from '@/components/SocialShare';
+import { UseCases, Testimonials } from '@/components/UseCases';
+import { ViewCounter } from '@/components/Analytics';
 import { useShareUrl } from '@/hooks/useShareUrl';
 
 interface Snapshot {
@@ -213,6 +219,14 @@ export default function Home() {
     }
   }, [url, currentIndex, viewMode, compareSelection, copyShareUrl]);
 
+  const handleCompareToNow = (oldestIndex: number) => {
+    setCompareSelection({
+      snapshot1: oldestIndex,
+      snapshot2: 0
+    });
+    setViewMode('compare');
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-tb-dark via-tb-darker to-black">
       {/* Hero Section */}
@@ -264,7 +278,7 @@ export default function Home() {
       {/* Results Section */}
       {snapshots.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 pb-16 md:pb-20">
-          {/* Stats Bar with Mode Toggle */}
+          {/* Stats Bar with Mode Toggle and Social Share */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
             <div className="flex items-center gap-3 md:gap-4 lg:gap-8 text-sm w-full sm:w-auto justify-between sm:justify-start">
               <div className="text-center">
@@ -286,17 +300,13 @@ export default function Home() {
                 <div className="text-gray-500 text-xs md:text-sm">Newest</div>
               </div>
               
-              {/* Share Button */}
-              <div className="sm:ml-auto">
-                <button
-                  onClick={handleShare}
-                  className="p-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors"
-                  title="Copy share link"
-                >
-                  <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                  </svg>
-                </button>
+              {/* Social Share Buttons */}
+              <div className="hidden sm:flex ml-auto">
+                <SocialShare 
+                  url={url} 
+                  snapshots={snapshots} 
+                  currentIndex={currentIndex} 
+                />
               </div>
             </div>
             
@@ -330,6 +340,17 @@ export default function Home() {
               </button>
             </div>
           </div>
+
+          {/* Compare to Now CTA */}
+          {viewMode === 'rewind' && snapshots.length > 5 && (
+            <div className="mb-6">
+              <CompareToNow 
+                snapshots={snapshots} 
+                url={url} 
+                onCompare={handleCompareToNow} 
+              />
+            </div>
+          )}
           
           {/* Conditional View Rendering */}
           {viewMode === 'rewind' ? (
@@ -349,6 +370,17 @@ export default function Home() {
               initialSnapshot2={compareSelection.snapshot2}
             />
           )}
+
+          {/* Biggest Changes - AI-detected evolution moments */}
+          {viewMode === 'rewind' && snapshots.length > 5 && (
+            <div className="mt-8">
+              <BiggestChanges 
+                snapshots={snapshots}
+                url={url}
+                onSelect={setCurrentIndex}
+              />
+            </div>
+          )}
           
           {/* AI Insights */}
           <div className="mt-8 md:mt-12">
@@ -359,6 +391,11 @@ export default function Home() {
               disabled={snapshots.length < 2}
               url={url}
             />
+          </div>
+
+          {/* Email Capture - Track this site */}
+          <div className="mt-8">
+            <EmailCapture url={url} context="inline" />
           </div>
           
           {/* Snapshot Grid */}
@@ -411,6 +448,15 @@ export default function Home() {
               </div>
             )}
           </div>
+
+          {/* Mobile Social Share */}
+          <div className="sm:hidden mt-8 flex justify-center">
+            <SocialShare 
+              url={url} 
+              snapshots={snapshots} 
+              currentIndex={currentIndex} 
+            />
+          </div>
         </div>
       )}
       
@@ -438,15 +484,45 @@ export default function Home() {
           
           {/* Popular Sites */}
           <PopularSites onSelect={fetchSnapshots} loading={loading} />
+
+          {/* Use Cases */}
+          <UseCases onExampleClick={fetchSnapshots} />
+
+          {/* Testimonials */}
+          <Testimonials />
+
+          {/* Email Capture - General */}
+          <div className="mt-12 max-w-md mx-auto">
+            <EmailCapture context="inline" />
+          </div>
         </div>
       )}
       
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-6 md:py-8 text-center text-gray-500 text-sm px-4">
-        <p>Built with the Wayback Machine API. Powered by AI insights.</p>
-        <p className="mt-2 text-xs text-gray-600 hidden md:block">
-          Tip: Use keyboard shortcuts for faster navigation. Press <kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-400 font-mono text-[10px]">?</kbd> for help.
-        </p>
+      <footer className="border-t border-gray-800 py-6 md:py-8 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div>
+              <p className="text-gray-500 text-sm">Built with the Wayback Machine API. Powered by AI insights.</p>
+              <p className="mt-1 text-xs text-gray-600 hidden md:block">
+                Tip: Use keyboard shortcuts for faster navigation. Press <kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-400 font-mono text-[10px]">?</kbd> for help.
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <ViewCounter />
+              <a 
+                href="https://github.com/galacticjack/timeback" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-500 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
       </footer>
 
       {/* Image Zoom Modal */}

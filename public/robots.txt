@@ -1,0 +1,6 @@
+# TimeBack Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://timeback.app/sitemap.xml
