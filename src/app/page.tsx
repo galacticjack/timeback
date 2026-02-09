@@ -15,6 +15,7 @@ import { SocialShare } from '@/components/SocialShare';
 import { UseCases, Testimonials } from '@/components/UseCases';
 import { ViewCounter } from '@/components/Analytics';
 import { useShareUrl } from '@/hooks/useShareUrl';
+import { fetchSnapshotsClient } from '@/lib/wayback-client';
 
 interface Snapshot {
   timestamp: string;
@@ -134,29 +135,17 @@ export default function Home() {
         cleanUrl = cleanUrl.replace(/^(https?:\/\/)?/, '');
       }
       
-      const response = await fetch(`/api/snapshots?url=${encodeURIComponent(cleanUrl)}`);
+      // Fetch directly from Wayback Machine CDX API (client-side)
+      // This bypasses Vercel's serverless function timeout limits
+      const rawSnapshots = await fetchSnapshotsClient(cleanUrl);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch snapshots');
-      }
-      
-      const data = await response.json();
-      
-      if (!data.snapshots || data.snapshots.length === 0) {
+      if (rawSnapshots.length === 0) {
         setError('No snapshots found for this URL. Try a popular website.');
         setLoading(false);
         return;
       }
       
-      const parsedSnapshots: Snapshot[] = data.snapshots.map((snap: {
-        timestamp: string;
-        originalUrl: string;
-        screenshotUrl: string;
-        year: number;
-        month: number;
-        day: number;
-      }) => ({
+      const parsedSnapshots: Snapshot[] = rawSnapshots.map((snap) => ({
         timestamp: snap.timestamp,
         url: snap.originalUrl,
         screenshotUrl: snap.screenshotUrl,
@@ -168,7 +157,8 @@ export default function Home() {
       setUrl(cleanUrl);
       
     } catch (err) {
-      setError('Failed to fetch snapshots. Please try again.');
+      const message = err instanceof Error ? err.message : 'Failed to fetch snapshots';
+      setError(message);
       console.error(err);
     } finally {
       setLoading(false);
