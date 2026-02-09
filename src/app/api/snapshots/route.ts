@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
   
   try {
-    const snapshots = await fetchSnapshots(url, 200)
+    const snapshots = await fetchSnapshots(url, 50)
     
     return NextResponse.json({ 
       snapshots,

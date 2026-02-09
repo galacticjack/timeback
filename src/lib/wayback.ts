@@ -41,34 +41,57 @@ export function getScreenshotUrl(timestamp: string, originalUrl: string): string
   return `https://web.archive.org/web/${timestamp}im_/${originalUrl}`
 }
 
+// Fetch with retry logic for 429 rate limiting
+async function fetchWithRetry(url: string, maxRetries: number = 3): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
+    
+    let response: Response
+    try {
+      response = await fetch(url, { 
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'TimeBack/1.0 (website archive viewer)'
+        }
+      })
+    } catch (err) {
+      clearTimeout(timeoutId)
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new Error('Wayback Machine API timed out. Please try again.')
+      }
+      throw err
+    } finally {
+      clearTimeout(timeoutId)
+    }
+    
+    if (response.status === 429 && attempt < maxRetries) {
+      // Wait with exponential backoff: 2s, 4s, 8s
+      const waitMs = Math.pow(2, attempt + 1) * 1000
+      await new Promise(resolve => setTimeout(resolve, waitMs))
+      continue
+    }
+    
+    return response
+  }
+  
+  throw new Error('Wayback Machine is rate-limiting requests. Please try again in a moment.')
+}
+
 // Fetch snapshots from CDX API
-export async function fetchSnapshots(url: string, limit: number = 100): Promise<Snapshot[]> {
+export async function fetchSnapshots(url: string, limit: number = 50): Promise<Snapshot[]> {
   const normalized = normalizeUrl(url)
   
-  // CDX API endpoint
+  // CDX API endpoint — collapse by month (timestamp:6) to reduce results and avoid rate limits
   const cdxUrl = new URL('https://web.archive.org/cdx/search/cdx')
   cdxUrl.searchParams.set('url', normalized)
   cdxUrl.searchParams.set('output', 'json')
   cdxUrl.searchParams.set('limit', limit.toString())
   cdxUrl.searchParams.set('filter', 'statuscode:200') // Only successful captures
-  cdxUrl.searchParams.set('collapse', 'timestamp:8') // One per day (first 8 chars = YYYYMMDD)
+  cdxUrl.searchParams.set('collapse', 'timestamp:6') // One per month (YYYYMM) — fewer results, less rate limiting
   cdxUrl.searchParams.set('fl', 'timestamp,original,mimetype,statuscode') // Fields to return
   
-  // Add timeout for slow Wayback Machine API
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
-  
-  let response: Response
-  try {
-    response = await fetch(cdxUrl.toString(), { signal: controller.signal })
-  } catch (err) {
-    if (err instanceof Error && err.name === 'AbortError') {
-      throw new Error('Wayback Machine API timed out. Please try again.')
-    }
-    throw err
-  } finally {
-    clearTimeout(timeoutId)
-  }
+  const response = await fetchWithRetry(cdxUrl.toString())
   
   if (!response.ok) {
     throw new Error(`Wayback Machine API error: ${response.status}`)
