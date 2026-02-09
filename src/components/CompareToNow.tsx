@@ -33,20 +33,20 @@ export function CompareToNow({ snapshots, url, onCompare }: CompareToNowProps) {
   };
 
   return (
-    <div className="bg-gradient-to-r from-purple-500/10 via-tb-accent/10 to-cyan-500/10 border border-purple-500/30 rounded-xl p-4 md:p-6">
+    <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-cyan-50 border border-purple-200 rounded-xl p-4 md:p-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-gradient-to-br from-purple-500/20 to-tb-accent/20 rounded-xl shrink-0">
-            <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl shrink-0">
+            <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-white text-lg">
+            <h3 className="font-semibold text-gray-900 text-lg">
               See {yearSpan}+ Years of Evolution
             </h3>
-            <p className="text-gray-400 text-sm mt-1">
-              Compare <span className="text-purple-400">{formatDate(oldest.date)}</span> → <span className="text-cyan-400">{formatDate(newest.date)}</span>
+            <p className="text-gray-500 text-sm mt-1">
+              Compare <span className="text-purple-600 font-medium">{formatDate(oldest.date)}</span> → <span className="text-cyan-600 font-medium">{formatDate(newest.date)}</span>
             </p>
           </div>
         </div>
@@ -62,11 +62,10 @@ export function CompareToNow({ snapshots, url, onCompare }: CompareToNowProps) {
         </button>
       </div>
 
-      {/* Expandable Preview */}
       {isExpanded && (
         <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="relative rounded-lg overflow-hidden border border-purple-500/30">
-            <div className="absolute top-0 left-0 right-0 bg-purple-500/20 text-purple-300 text-xs py-1 px-2 text-center z-10">
+          <div className="relative rounded-lg overflow-hidden border border-purple-200">
+            <div className="absolute top-0 left-0 right-0 bg-purple-100 text-purple-700 text-xs py-1 px-2 text-center z-10">
               {formatDate(oldest.date)}
             </div>
             <img 
@@ -75,8 +74,8 @@ export function CompareToNow({ snapshots, url, onCompare }: CompareToNowProps) {
               className="w-full aspect-video object-cover object-top opacity-80"
             />
           </div>
-          <div className="relative rounded-lg overflow-hidden border border-cyan-500/30">
-            <div className="absolute top-0 left-0 right-0 bg-cyan-500/20 text-cyan-300 text-xs py-1 px-2 text-center z-10">
+          <div className="relative rounded-lg overflow-hidden border border-cyan-200">
+            <div className="absolute top-0 left-0 right-0 bg-cyan-100 text-cyan-700 text-xs py-1 px-2 text-center z-10">
               {formatDate(newest.date)}
             </div>
             <img 
@@ -90,7 +89,7 @@ export function CompareToNow({ snapshots, url, onCompare }: CompareToNowProps) {
       
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full mt-4 text-center text-sm text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-1"
+        className="w-full mt-4 text-center text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center gap-1"
       >
         {isExpanded ? 'Hide Preview' : 'Preview Changes'}
         <svg 

@@ -9,16 +9,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1f;
+  background: #f3f4f6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3f3f46;
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+  background: #9ca3af;
 }
 
 /* Range slider styling */
@@ -29,7 +29,7 @@
   background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
   border-radius: 50%;
   cursor: pointer;
-  border: 3px solid #0a0a0f;
+  border: 3px solid #ffffff;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -45,7 +45,7 @@
   background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
   border-radius: 50%;
   cursor: pointer;
-  border: 3px solid #0a0a0f;
+  border: 3px solid #ffffff;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
 }
 
@@ -65,18 +65,18 @@
 /* Iframe fixes */
 iframe {
   border: none;
-  background: #0a0a0f;
+  background: #ffffff;
 }
 
-/* Loading skeleton - enhanced shimmer effect */
+/* Loading skeleton - light shimmer effect */
 .skeleton {
   background: linear-gradient(
     90deg,
-    #1f1f23 0%,
-    #1f1f23 40%,
-    #2a2a30 50%,
-    #1f1f23 60%,
-    #1f1f23 100%
+    #f3f4f6 0%,
+    #f3f4f6 40%,
+    #e5e7eb 50%,
+    #f3f4f6 60%,
+    #f3f4f6 100%
   );
   background-size: 400% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -89,12 +89,12 @@ iframe {
 
 /* Glow effects */
 .glow-accent {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
 }
 
-/* Glass effect */
+/* Glass effect - light variant */
 .glass {
-  background: rgba(10, 10, 15, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -105,7 +105,7 @@ iframe {
   @media (prefers-reduced-motion: reduce) {
     .skeleton {
       animation: none;
-      background: #1f1f23;
+      background: #f3f4f6;
     }
   }
   
@@ -146,7 +146,7 @@ iframe {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.05),
+    rgba(99, 102, 241, 0.05),
     transparent
   );
   animation: imageShimmer 1.5s infinite;
@@ -195,13 +195,13 @@ iframe {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .border-gray-700 {
-    border-color: #a1a1aa;
+  .border-gray-200 {
+    border-color: #6b7280;
   }
   
-  .text-gray-400,
-  .text-gray-500 {
-    color: #d4d4d8;
+  .text-gray-500,
+  .text-gray-600 {
+    color: #374151;
   }
 }
 

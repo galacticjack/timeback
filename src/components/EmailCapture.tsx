@@ -24,7 +24,6 @@ export function EmailCapture({ url, context = 'inline' }: EmailCaptureProps) {
     setStatus('loading');
 
     try {
-      // Store locally for now (could connect to email service later)
       const subscribers = JSON.parse(localStorage.getItem('timeback_subscribers') || '[]');
       subscribers.push({
         email,
@@ -44,10 +43,10 @@ export function EmailCapture({ url, context = 'inline' }: EmailCaptureProps) {
 
   if (status === 'success') {
     return (
-      <div className={`${context === 'sidebar' ? 'p-4' : 'p-6'} bg-green-500/10 border border-green-500/30 rounded-xl text-center`}>
+      <div className={`${context === 'sidebar' ? 'p-4' : 'p-6'} bg-green-50 border border-green-200 rounded-xl text-center`}>
         <div className="text-2xl mb-2">✓</div>
-        <p className="text-green-400 font-medium">You're on the list!</p>
-        <p className="text-sm text-gray-400 mt-1">
+        <p className="text-green-700 font-medium">You&apos;re on the list!</p>
+        <p className="text-sm text-gray-500 mt-1">
           {url ? `We'll notify you when ${url} changes.` : `We'll keep you updated.`}
         </p>
       </div>
@@ -55,7 +54,7 @@ export function EmailCapture({ url, context = 'inline' }: EmailCaptureProps) {
   }
 
   return (
-    <div className={`${context === 'sidebar' ? 'p-4' : 'p-6'} bg-gradient-to-b from-gray-800/50 to-gray-900/50 border border-gray-700/50 rounded-xl`}>
+    <div className={`${context === 'sidebar' ? 'p-4' : 'p-6'} bg-white border border-gray-200 rounded-xl shadow-sm`}>
       <div className="flex items-start gap-3 mb-4">
         <div className="p-2 bg-tb-accent/10 rounded-lg shrink-0">
           <svg className="w-5 h-5 text-tb-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,10 +62,10 @@ export function EmailCapture({ url, context = 'inline' }: EmailCaptureProps) {
           </svg>
         </div>
         <div>
-          <h3 className="font-semibold text-white">
+          <h3 className="font-semibold text-gray-900">
             {url ? 'Track This Site' : 'Get Notified'}
           </h3>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-500">
             {url 
               ? `Get alerted when ${url} makes significant changes.`
               : 'Be the first to know about new features and interesting archive discoveries.'
@@ -85,20 +84,20 @@ export function EmailCapture({ url, context = 'inline' }: EmailCaptureProps) {
               if (status === 'error') setStatus('idle');
             }}
             placeholder="your@email.com"
-            className={`w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-tb-accent transition-colors ${
-              status === 'error' ? 'border-red-500' : 'border-gray-700'
+            className={`w-full bg-white border rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-tb-accent transition-colors ${
+              status === 'error' ? 'border-red-400' : 'border-gray-200'
             }`}
             disabled={status === 'loading'}
           />
           {status === 'error' && (
-            <p className="text-red-400 text-xs mt-1">{errorMessage}</p>
+            <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
           )}
         </div>
         
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="w-full bg-tb-accent hover:bg-tb-accent/90 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2"
+          className="w-full bg-tb-accent hover:bg-tb-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2"
         >
           {status === 'loading' ? (
             <>
@@ -119,7 +118,7 @@ export function EmailCapture({ url, context = 'inline' }: EmailCaptureProps) {
         </button>
       </form>
 
-      <p className="text-xs text-gray-500 text-center mt-3">
+      <p className="text-xs text-gray-400 text-center mt-3">
         No spam. Unsubscribe anytime.
       </p>
     </div>

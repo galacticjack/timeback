@@ -44,17 +44,17 @@ export function AIInsights({ insights, loading, onGenerate, disabled, url = '' }
   };
 
   return (
-    <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-2xl p-6">
+    <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-white">AI Insights</h3>
-            <p className="text-sm text-gray-400">Powered by GPT-4</p>
+            <h3 className="font-semibold text-gray-900">AI Insights</h3>
+            <p className="text-sm text-gray-500">Powered by GPT-4</p>
           </div>
         </div>
         
@@ -62,7 +62,7 @@ export function AIInsights({ insights, loading, onGenerate, disabled, url = '' }
           <button
             onClick={onGenerate}
             disabled={disabled || loading}
-            className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed rounded-xl font-medium text-sm transition-all flex items-center gap-2"
+            className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed rounded-xl font-medium text-sm text-white transition-all flex items-center gap-2"
           >
             {loading ? (
               <>
@@ -86,24 +86,24 @@ export function AIInsights({ insights, loading, onGenerate, disabled, url = '' }
       
       {/* Loading State with Facts */}
       {loading && currentFact && (
-        <div className="bg-gray-800/50 rounded-xl p-4 mb-4 border border-gray-700/50">
+        <div className="bg-white rounded-xl p-4 mb-4 border border-gray-200">
           <div className="flex items-start gap-3">
             <span className="text-2xl">{getCategoryIcon(currentFact.category)}</span>
             <div className="flex-1">
-              <p className="text-gray-300 text-sm leading-relaxed">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 {currentFact.fact}
               </p>
               {currentFact.year && (
-                <p className="text-gray-500 text-xs mt-1">— {currentFact.year}</p>
+                <p className="text-gray-400 text-xs mt-1">— {currentFact.year}</p>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
+          <div className="flex items-center gap-2 mt-3 text-xs text-gray-400">
             <span className="flex gap-1">
               {[0, 1, 2].map(i => (
                 <span 
                   key={i} 
-                  className={`w-1.5 h-1.5 rounded-full ${i === factIndex % 3 ? 'bg-purple-500' : 'bg-gray-700'}`}
+                  className={`w-1.5 h-1.5 rounded-full ${i === factIndex % 3 ? 'bg-purple-500' : 'bg-gray-200'}`}
                 />
               ))}
             </span>
@@ -113,26 +113,26 @@ export function AIInsights({ insights, loading, onGenerate, disabled, url = '' }
       )}
       
       {insights ? (
-        <div className="prose prose-invert max-w-none">
-          <div className="bg-gray-800/50 rounded-xl p-4 text-gray-300 leading-relaxed whitespace-pre-wrap">
+        <div className="prose max-w-none">
+          <div className="bg-white rounded-xl p-4 text-gray-700 leading-relaxed whitespace-pre-wrap border border-gray-200">
             {insights}
           </div>
         </div>
       ) : !loading && (
-        <div className="text-gray-400 text-sm">
-          <p>Click "Generate Insights" to get AI-powered analysis of this website's evolution, including:</p>
+        <div className="text-gray-500 text-sm">
+          <p>Click "Generate Insights" to get AI-powered analysis of this website&apos;s evolution, including:</p>
           <ul className="mt-2 space-y-1 ml-4">
             <li className="flex items-center gap-2">
-              <span className="text-purple-400">•</span> Major redesigns and when they happened
+              <span className="text-purple-500">•</span> Major redesigns and when they happened
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-blue-400">•</span> Brand evolution and messaging changes
+              <span className="text-blue-500">•</span> Brand evolution and messaging changes
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-green-400">•</span> Technology and design trend adoption
+              <span className="text-green-500">•</span> Technology and design trend adoption
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-yellow-400">•</span> Business pivots visible through the site
+              <span className="text-yellow-500">•</span> Business pivots visible through the site
             </li>
           </ul>
         </div>

@@ -35,7 +35,7 @@ function SkeletonLoader() {
 
 // Fallback placeholder when image fails
 function FallbackPlaceholder({ 
-  gradient = 'from-gray-800 to-gray-900',
+  gradient = 'from-gray-100 to-gray-200',
   icon,
   message = 'Preview unavailable'
 }: { 
@@ -46,24 +46,24 @@ function FallbackPlaceholder({
   return (
     <div className={`absolute inset-0 bg-gradient-to-br ${gradient} flex items-center justify-center`}>
       {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)`,
           backgroundSize: '20px 20px'
         }}></div>
       </div>
       
       {/* Content */}
       <div className="flex flex-col items-center gap-2 z-10">
-        <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
+        <div className="w-12 h-12 bg-gray-300/30 backdrop-blur-sm rounded-xl flex items-center justify-center">
           {icon || (
-            <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           )}
         </div>
-        <span className="text-white/50 text-xs">{message}</span>
+        <span className="text-gray-400 text-xs">{message}</span>
       </div>
     </div>
   );

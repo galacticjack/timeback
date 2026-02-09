@@ -105,13 +105,13 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
   };
   
   return (
-    <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/50 rounded-2xl p-6">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <button
             onClick={onBack}
-            className="p-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors"
+            className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
             title="Back to Rewind (Esc)"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,21 +119,21 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             </svg>
           </button>
           <div>
-            <h2 className="text-lg font-semibold text-white">Compare Snapshots</h2>
-            <p className="text-sm text-gray-400">
+            <h2 className="text-lg font-semibold text-gray-900">Compare Snapshots</h2>
+            <p className="text-sm text-gray-500">
               Select two snapshots to see the differences
             </p>
           </div>
         </div>
         
         {/* View Mode Toggle */}
-        <div className="flex items-center gap-1 bg-gray-800/50 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setViewMode('side-by-side')}
             className={`px-3 py-1.5 rounded text-sm font-medium transition ${
               viewMode === 'side-by-side' 
-                ? 'bg-tb-accent text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-tb-accent text-white shadow-sm' 
+                : 'text-gray-500 hover:text-gray-900'
             }`}
             title="Side by Side (1)"
           >
@@ -143,8 +143,8 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             onClick={() => setViewMode('slider')}
             className={`px-3 py-1.5 rounded text-sm font-medium transition ${
               viewMode === 'slider' 
-                ? 'bg-tb-accent text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-tb-accent text-white shadow-sm' 
+                : 'text-gray-500 hover:text-gray-900'
             }`}
             title="Slider (2)"
           >
@@ -154,8 +154,8 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             onClick={() => setViewMode('overlay')}
             className={`px-3 py-1.5 rounded text-sm font-medium transition ${
               viewMode === 'overlay' 
-                ? 'bg-tb-accent text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-tb-accent text-white shadow-sm' 
+                : 'text-gray-500 hover:text-gray-900'
             }`}
             title="Overlay (3)"
           >
@@ -165,14 +165,14 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             onClick={() => setViewMode('diff')}
             className={`px-3 py-1.5 rounded text-sm font-medium transition ${
               viewMode === 'diff' 
-                ? 'bg-tb-accent text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-tb-accent text-white shadow-sm' 
+                : 'text-gray-500 hover:text-gray-900'
             }`}
             title="Visual Diff (4)"
           >
             <span className="flex items-center gap-1">
               Diff
-              <span className="text-[10px] bg-yellow-500/20 text-yellow-400 px-1 rounded">NEW</span>
+              <span className="text-[10px] bg-yellow-100 text-yellow-700 px-1 rounded">NEW</span>
             </span>
           </button>
         </div>
@@ -181,10 +181,10 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
       {/* Snapshot Selectors */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div 
-          className={`transition-all rounded-lg ${activePanel === 'left' ? 'ring-2 ring-tb-accent ring-offset-2 ring-offset-gray-900' : ''}`}
+          className={`transition-all rounded-lg ${activePanel === 'left' ? 'ring-2 ring-tb-accent ring-offset-2 ring-offset-white' : ''}`}
           onClick={() => setActivePanel('left')}
         >
-          <label className="block text-sm font-medium text-gray-400 mb-2">
+          <label className="block text-sm font-medium text-gray-500 mb-2">
             <span className="inline-flex items-center gap-2">
               <span className="w-3 h-3 bg-red-500 rounded-full"></span>
               Earlier Snapshot
@@ -197,7 +197,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
               setSnapshot1Index(parseInt(e.target.value));
               setLeftLoaded(false);
             }}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-tb-accent focus:outline-none"
+            className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-gray-900 focus:border-tb-accent focus:outline-none"
           >
             {snapshots.map((snapshot, index) => (
               <option key={snapshot.timestamp} value={index} disabled={index === snapshot2Index}>
@@ -211,7 +211,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
         <div className="absolute left-1/2 -translate-x-1/2 z-10 hidden md:block" style={{ marginTop: '1.75rem' }}>
           <button
             onClick={swapSnapshots}
-            className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors border border-gray-600"
+            className="p-2 bg-white hover:bg-gray-50 text-gray-600 rounded-full transition-colors border border-gray-200 shadow-sm"
             title="Swap snapshots"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,10 +221,10 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
         </div>
         
         <div 
-          className={`transition-all rounded-lg ${activePanel === 'right' ? 'ring-2 ring-tb-accent ring-offset-2 ring-offset-gray-900' : ''}`}
+          className={`transition-all rounded-lg ${activePanel === 'right' ? 'ring-2 ring-tb-accent ring-offset-2 ring-offset-white' : ''}`}
           onClick={() => setActivePanel('right')}
         >
-          <label className="block text-sm font-medium text-gray-400 mb-2">
+          <label className="block text-sm font-medium text-gray-500 mb-2">
             <span className="inline-flex items-center gap-2">
               <span className="w-3 h-3 bg-green-500 rounded-full"></span>
               Later Snapshot
@@ -237,7 +237,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
               setSnapshot2Index(parseInt(e.target.value));
               setRightLoaded(false);
             }}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-tb-accent focus:outline-none"
+            className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2 text-gray-900 focus:border-tb-accent focus:outline-none"
           >
             {snapshots.map((snapshot, index) => (
               <option key={snapshot.timestamp} value={index} disabled={index === snapshot1Index}>
@@ -249,31 +249,31 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
       </div>
       
       {/* Time Gap Indicator */}
-      <div className="flex items-center justify-center gap-4 mb-6 p-3 bg-gray-800/30 rounded-lg">
-        <span className="text-sm text-gray-400">Time difference:</span>
-        <span className="font-semibold text-white">
+      <div className="flex items-center justify-center gap-4 mb-6 p-3 bg-gray-50 rounded-lg">
+        <span className="text-sm text-gray-500">Time difference:</span>
+        <span className="font-semibold text-gray-900">
           {getTimeDifference(earlier.date, later.date)}
         </span>
-        <span className="text-gray-600">•</span>
-        <span className="text-xs text-gray-500">
-          Tab to switch panels • 1-4 for views • Esc to exit
+        <span className="text-gray-300">·</span>
+        <span className="text-xs text-gray-400">
+          Tab to switch panels · 1-4 for views · Esc to exit
         </span>
       </div>
       
       {/* Comparison View */}
       <div 
         ref={containerRef}
-        className="relative bg-gray-900 rounded-xl overflow-hidden border border-gray-700"
+        className="relative bg-gray-50 rounded-xl overflow-hidden border border-gray-200"
         style={{ minHeight: '500px' }}
       >
         {viewMode === 'side-by-side' && (
-          <div className="grid grid-cols-2 divide-x divide-gray-700">
+          <div className="grid grid-cols-2 divide-x divide-gray-200">
             {/* Earlier */}
             <div className="relative">
-              <div className="bg-red-500/10 px-3 py-2 text-center border-b border-gray-700">
-                <span className="text-red-400 text-sm font-medium">{formatDate(earlier.date)}</span>
+              <div className="bg-red-50 px-3 py-2 text-center border-b border-gray-200">
+                <span className="text-red-600 text-sm font-medium">{formatDate(earlier.date)}</span>
               </div>
-              <div className="aspect-[4/3] relative bg-gray-900">
+              <div className="aspect-[4/3] relative bg-gray-50">
                 {!leftLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <svg className="w-8 h-8 animate-spin text-tb-accent" fill="none" viewBox="0 0 24 24">
@@ -290,7 +290,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                   loading="lazy"
                 />
               </div>
-              <div className="p-2 text-center border-t border-gray-700">
+              <div className="p-2 text-center border-t border-gray-200">
                 <a
                   href={getWaybackUrl(earlier)}
                   target="_blank"
@@ -304,10 +304,10 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             
             {/* Later */}
             <div className="relative">
-              <div className="bg-green-500/10 px-3 py-2 text-center border-b border-gray-700">
-                <span className="text-green-400 text-sm font-medium">{formatDate(later.date)}</span>
+              <div className="bg-green-50 px-3 py-2 text-center border-b border-gray-200">
+                <span className="text-green-600 text-sm font-medium">{formatDate(later.date)}</span>
               </div>
-              <div className="aspect-[4/3] relative bg-gray-900">
+              <div className="aspect-[4/3] relative bg-gray-50">
                 {!rightLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <svg className="w-8 h-8 animate-spin text-tb-accent" fill="none" viewBox="0 0 24 24">
@@ -324,7 +324,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                   loading="lazy"
                 />
               </div>
-              <div className="p-2 text-center border-t border-gray-700">
+              <div className="p-2 text-center border-t border-gray-200">
                 <a
                   href={getWaybackUrl(later)}
                   target="_blank"
@@ -348,7 +348,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                 sandbox="allow-same-origin"
                 loading="lazy"
               />
-              <div className="absolute bottom-4 right-4 bg-green-500/80 text-white text-xs px-2 py-1 rounded">
+              <div className="absolute bottom-4 right-4 bg-green-500 text-white text-xs px-2 py-1 rounded shadow-sm">
                 {formatDate(later.date)}
               </div>
             </div>
@@ -366,14 +366,14 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                   loading="lazy"
                 />
               </div>
-              <div className="absolute bottom-4 left-4 bg-red-500/80 text-white text-xs px-2 py-1 rounded">
+              <div className="absolute bottom-4 left-4 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-sm">
                 {formatDate(earlier.date)}
               </div>
             </div>
             
             {/* Slider handle - touch and mouse support */}
             <div 
-              className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize z-10 touch-none"
+              className="absolute top-0 bottom-0 w-1 bg-tb-accent cursor-ew-resize z-10 touch-none"
               style={{ left: `${sliderPosition}%` }}
               onMouseDown={(e) => {
                 const startX = e.clientX;
@@ -416,15 +416,15 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                 document.addEventListener('touchend', handleTouchEnd);
               }}
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-gray-200 active:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-tb-accent active:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-tb-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                 </svg>
               </div>
             </div>
             
             {/* Touch hint on mobile */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full md:hidden">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-gray-900/70 text-white text-xs px-3 py-1.5 rounded-full md:hidden">
               ← Drag to compare →
             </div>
           </div>
@@ -456,8 +456,8 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             </div>
             
             {/* Opacity control */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 rounded-lg p-4 flex items-center gap-4">
-              <span className="text-xs text-red-400 whitespace-nowrap">{formatDate(earlier.date)}</span>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur rounded-lg p-4 flex items-center gap-4 shadow-lg border border-gray-200">
+              <span className="text-xs text-red-600 whitespace-nowrap font-medium">{formatDate(earlier.date)}</span>
               <input
                 type="range"
                 min="0"
@@ -467,7 +467,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                 onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
                 className="w-40 accent-tb-accent"
               />
-              <span className="text-xs text-green-400 whitespace-nowrap">{formatDate(later.date)}</span>
+              <span className="text-xs text-green-600 whitespace-nowrap font-medium">{formatDate(later.date)}</span>
             </div>
           </div>
         )}
@@ -475,11 +475,11 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
         {viewMode === 'diff' && (
           <div className="relative h-[500px]">
             {/* Side by side with diff overlay */}
-            <div className="grid grid-cols-2 h-full divide-x divide-gray-700">
+            <div className="grid grid-cols-2 h-full divide-x divide-gray-200">
               {/* Earlier with diff highlight */}
               <div className="relative">
-                <div className="absolute top-0 left-0 right-0 bg-red-500/10 px-3 py-2 text-center border-b border-gray-700 z-10">
-                  <span className="text-red-400 text-sm font-medium">{formatDate(earlier.date)}</span>
+                <div className="absolute top-0 left-0 right-0 bg-red-50 px-3 py-2 text-center border-b border-gray-200 z-10">
+                  <span className="text-red-600 text-sm font-medium">{formatDate(earlier.date)}</span>
                 </div>
                 <iframe
                   src={getWaybackUrl(earlier)}
@@ -487,7 +487,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                   sandbox="allow-same-origin"
                   loading="lazy"
                 />
-                {/* Diff overlay effect - areas that changed are highlighted */}
+                {/* Diff overlay effect */}
                 <div 
                   className="absolute inset-0 pointer-events-none mt-10"
                   style={{
@@ -505,8 +505,8 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
               
               {/* Later with diff highlight */}
               <div className="relative">
-                <div className="absolute top-0 left-0 right-0 bg-green-500/10 px-3 py-2 text-center border-b border-gray-700 z-10">
-                  <span className="text-green-400 text-sm font-medium">{formatDate(later.date)}</span>
+                <div className="absolute top-0 left-0 right-0 bg-green-50 px-3 py-2 text-center border-b border-gray-200 z-10">
+                  <span className="text-green-600 text-sm font-medium">{formatDate(later.date)}</span>
                 </div>
                 <iframe
                   src={getWaybackUrl(later)}
@@ -532,8 +532,8 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
             </div>
             
             {/* Diff intensity control */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 rounded-lg p-4 flex items-center gap-4 border border-gray-700">
-              <span className="text-xs text-gray-400">Diff intensity:</span>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur rounded-lg p-4 flex items-center gap-4 border border-gray-200 shadow-lg">
+              <span className="text-xs text-gray-500">Diff intensity:</span>
               <input
                 type="range"
                 min="0"
@@ -545,19 +545,19 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
               />
               <div className="flex items-center gap-2 text-xs">
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 bg-red-500/50 rounded"></span>
-                  <span className="text-red-400">Removed</span>
+                  <span className="w-3 h-3 bg-red-200 rounded border border-red-300"></span>
+                  <span className="text-red-600">Removed</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 bg-green-500/50 rounded"></span>
-                  <span className="text-green-400">Added</span>
+                  <span className="w-3 h-3 bg-green-200 rounded border border-green-300"></span>
+                  <span className="text-green-600">Added</span>
                 </span>
               </div>
             </div>
 
             {/* Sync scroll indicator */}
-            <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-yellow-500/20 text-yellow-400 text-xs px-3 py-1 rounded-full border border-yellow-500/30">
-              💡 Tip: Scroll both panels to compare sections
+            <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-yellow-50 text-yellow-700 text-xs px-3 py-1 rounded-full border border-yellow-200">
+              Tip: Scroll both panels to compare sections
             </div>
           </div>
         )}
@@ -567,22 +567,20 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
       <div className="flex flex-wrap justify-center gap-3 mt-6">
         <button
           onClick={() => {
-            // Compare oldest vs newest
             setSnapshot1Index(snapshots.length - 1);
             setSnapshot2Index(0);
             setLeftLoaded(false);
             setRightLoaded(false);
           }}
-          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors flex items-center gap-2"
         >
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           Oldest vs Newest
         </button>
         <button
           onClick={() => {
-            // Compare year-over-year (find snapshots ~1 year apart)
             const oneYearAgo = new Date(snapshots[0].date);
             oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
             
@@ -594,32 +592,31 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
               setRightLoaded(false);
             }
           }}
-          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors flex items-center gap-2"
         >
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           Year Over Year
         </button>
         <button
           onClick={() => {
-            // Compare adjacent snapshots (biggest change detection)
             const mid = Math.floor(snapshots.length / 2);
             setSnapshot1Index(mid);
             setSnapshot2Index(mid - 1);
             setLeftLoaded(false);
             setRightLoaded(false);
           }}
-          className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors flex items-center gap-2"
         >
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
           Middle Snapshots
         </button>
         <button
           onClick={swapSnapshots}
-          className="px-4 py-2 bg-tb-accent/20 hover:bg-tb-accent/30 text-tb-accent rounded-lg text-sm transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-tb-accent/10 hover:bg-tb-accent/20 text-tb-accent rounded-lg text-sm transition-colors flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />

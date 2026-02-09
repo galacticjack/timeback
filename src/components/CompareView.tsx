@@ -33,7 +33,7 @@ export default function CompareView({ snapshot1, snapshot2, onClose }: CompareVi
               className={`px-3 py-1.5 rounded text-sm transition ${
                 viewMode === 'side-by-side' 
                   ? 'bg-tb-accent text-white' 
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
             >
               Side by Side
@@ -43,7 +43,7 @@ export default function CompareView({ snapshot1, snapshot2, onClose }: CompareVi
               className={`px-3 py-1.5 rounded text-sm transition ${
                 viewMode === 'slider' 
                   ? 'bg-tb-accent text-white' 
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
             >
               Slider
@@ -53,7 +53,7 @@ export default function CompareView({ snapshot1, snapshot2, onClose }: CompareVi
               className={`px-3 py-1.5 rounded text-sm transition ${
                 viewMode === 'overlay' 
                   ? 'bg-tb-accent text-white' 
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
             >
               Overlay
@@ -61,7 +61,7 @@ export default function CompareView({ snapshot1, snapshot2, onClose }: CompareVi
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition"
+            className="text-gray-500 hover:text-gray-900 transition"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

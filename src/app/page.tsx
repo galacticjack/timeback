@@ -228,20 +228,20 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-tb-dark via-tb-darker to-black">
+    <main className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-4 pt-12 md:pt-16 pb-6 md:pb-8">
         <div className="text-center mb-8 md:mb-12">
-          <div className="inline-flex items-center gap-2 bg-tb-accent/10 border border-tb-accent/30 rounded-full px-3 md:px-4 py-1.5 mb-4 md:mb-6">
+          <div className="inline-flex items-center gap-2 bg-tb-accent/10 border border-tb-accent/20 rounded-full px-3 md:px-4 py-1.5 mb-4 md:mb-6">
             <span className="w-2 h-2 bg-tb-accent rounded-full animate-pulse"></span>
             <span className="text-tb-accent text-xs md:text-sm font-medium">Visual Time Machine</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-gray-900 via-gray-700 to-gray-500 bg-clip-text text-transparent">
             Rewind Any Website
           </h1>
           
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-6 md:mb-8 px-4">
+          <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-6 md:mb-8 px-4">
             Watch websites evolve through time with a visual timeline. 
             <span className="text-tb-accent"> AI-powered insights</span> reveal what changed and why it matters.
           </p>
@@ -249,26 +249,26 @@ export default function Home() {
           <SearchBar onSearch={fetchSnapshots} loading={loading} />
           
           {error && (
-            <p className="mt-4 text-red-400 text-sm">{error}</p>
+            <p className="mt-4 text-red-500 text-sm">{error}</p>
           )}
           
           {/* Keyboard shortcuts hint - desktop only */}
-          <div className="hidden md:flex items-center justify-center gap-6 mt-6 text-xs text-gray-500">
+          <div className="hidden md:flex items-center justify-center gap-6 mt-6 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
-              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">←</kbd>
-              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">→</kbd>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-500 font-mono">←</kbd>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-500 font-mono">→</kbd>
               Navigate
             </span>
             <span className="flex items-center gap-1.5">
-              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">Space</kbd>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-500 font-mono">Space</kbd>
               Play/Pause
             </span>
             <span className="flex items-center gap-1.5">
-              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">C</kbd>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-500 font-mono">C</kbd>
               Compare Mode
             </span>
             <span className="flex items-center gap-1.5">
-              <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">Esc</kbd>
+              <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-500 font-mono">Esc</kbd>
               Exit
             </span>
           </div>
@@ -282,22 +282,22 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
             <div className="flex items-center gap-3 md:gap-4 lg:gap-8 text-sm w-full sm:w-auto justify-between sm:justify-start">
               <div className="text-center">
-                <div className="text-lg md:text-xl lg:text-2xl font-bold text-white">{snapshots.length}</div>
-                <div className="text-gray-500 text-xs md:text-sm">Snapshots</div>
+                <div className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">{snapshots.length}</div>
+                <div className="text-gray-400 text-xs md:text-sm">Snapshots</div>
               </div>
-              <div className="w-px h-8 bg-gray-700 hidden sm:block"></div>
+              <div className="w-px h-8 bg-gray-200 hidden sm:block"></div>
               <div className="text-center">
-                <div className="text-lg md:text-xl lg:text-2xl font-bold text-white">
+                <div className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">
                   {snapshots[snapshots.length - 1].date.getFullYear()}
                 </div>
-                <div className="text-gray-500 text-xs md:text-sm">Oldest</div>
+                <div className="text-gray-400 text-xs md:text-sm">Oldest</div>
               </div>
-              <div className="w-px h-8 bg-gray-700 hidden sm:block"></div>
+              <div className="w-px h-8 bg-gray-200 hidden sm:block"></div>
               <div className="text-center">
-                <div className="text-lg md:text-xl lg:text-2xl font-bold text-white">
+                <div className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">
                   {snapshots[0].date.getFullYear()}
                 </div>
-                <div className="text-gray-500 text-xs md:text-sm">Newest</div>
+                <div className="text-gray-400 text-xs md:text-sm">Newest</div>
               </div>
               
               {/* Social Share Buttons */}
@@ -311,13 +311,13 @@ export default function Home() {
             </div>
             
             {/* Mode Toggle */}
-            <div className="flex items-center gap-2 bg-gray-800/50 rounded-xl p-1.5 w-full sm:w-auto justify-center sm:justify-start">
+            <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1.5 w-full sm:w-auto justify-center sm:justify-start">
               <button
                 onClick={() => setViewMode('rewind')}
                 className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none justify-center ${
                   viewMode === 'rewind'
                     ? 'bg-tb-accent text-white shadow-lg shadow-tb-accent/25'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-white'
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,7 +330,7 @@ export default function Home() {
                 className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none justify-center ${
                   viewMode === 'compare'
                     ? 'bg-tb-accent text-white shadow-lg shadow-tb-accent/25'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-white'
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,8 +401,8 @@ export default function Home() {
           {/* Snapshot Grid */}
           <div className="mt-8 md:mt-12">
             <div className="flex items-center justify-between mb-4 md:mb-6">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-300">All Snapshots</h2>
-              <span className="text-xs md:text-sm text-gray-500">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900">All Snapshots</h2>
+              <span className="text-xs md:text-sm text-gray-400">
                 Showing {Math.min(20, snapshots.length)} of {snapshots.length}
               </span>
             </div>
@@ -410,8 +410,8 @@ export default function Home() {
             {/* Mobile: horizontal scroll. Desktop: grid */}
             <div className="relative">
               {/* Fade hints on mobile */}
-              <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-tb-dark to-transparent pointer-events-none z-10 md:hidden" />
-              <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-tb-dark to-transparent pointer-events-none z-10 md:hidden" />
+              <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none z-10 md:hidden" />
+              <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none z-10 md:hidden" />
               
               {/* Scrollable on mobile, grid on desktop */}
               <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 overflow-x-auto pb-4 md:pb-0 scrollbar-hide snap-x snap-mandatory md:snap-none -mx-4 px-4 md:mx-0 md:px-0">
@@ -439,10 +439,10 @@ export default function Home() {
             {/* Load more indicator */}
             {snapshots.length > 20 && (
               <div className="mt-6 md:mt-8 text-center">
-                <p className="text-gray-500 text-sm mb-2">
+                <p className="text-gray-400 text-sm mb-2">
                   {snapshots.length - 20} more snapshots available
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-300 text-xs">
                   Use the timeline slider above to navigate all snapshots
                 </p>
               </div>
@@ -499,13 +499,13 @@ export default function Home() {
       )}
       
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-6 md:py-8 px-4">
+      <footer className="border-t border-gray-200 py-6 md:py-8 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div>
-              <p className="text-gray-500 text-sm">Built with the Wayback Machine API. Powered by AI insights.</p>
-              <p className="mt-1 text-xs text-gray-600 hidden md:block">
-                Tip: Use keyboard shortcuts for faster navigation. Press <kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-400 font-mono text-[10px]">?</kbd> for help.
+              <p className="text-gray-400 text-sm">Built with the Wayback Machine API. Powered by AI insights.</p>
+              <p className="mt-1 text-xs text-gray-300 hidden md:block">
+                Tip: Use keyboard shortcuts for faster navigation. Press <kbd className="px-1 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-500 font-mono text-[10px]">?</kbd> for help.
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -514,7 +514,7 @@ export default function Home() {
                 href="https://github.com/galacticjack/timeback" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-gray-900 transition-colors"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -546,10 +546,10 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
   return (
-    <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 border border-gray-700/50 rounded-xl p-5 md:p-6 hover:border-tb-accent/30 transition-colors">
+    <div className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 hover:border-tb-accent/30 hover:shadow-lg transition-all">
       <div className="text-2xl md:text-3xl mb-3 md:mb-4">{icon}</div>
-      <h3 className="text-base md:text-lg font-semibold mb-2 text-white">{title}</h3>
-      <p className="text-gray-400 text-sm">{description}</p>
+      <h3 className="text-base md:text-lg font-semibold mb-2 text-gray-900">{title}</h3>
+      <p className="text-gray-500 text-sm">{description}</p>
     </div>
   );
 }

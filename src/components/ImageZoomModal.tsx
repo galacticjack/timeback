@@ -63,7 +63,7 @@ export function ImageZoomModal({ snapshot, onClose }: ImageZoomModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -71,7 +71,7 @@ export function ImageZoomModal({ snapshot, onClose }: ImageZoomModalProps) {
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 bg-gray-800/80 hover:bg-gray-700 rounded-full transition-colors z-10"
+        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-10"
         title="Close (Esc)"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,46 +80,46 @@ export function ImageZoomModal({ snapshot, onClose }: ImageZoomModalProps) {
       </button>
 
       {/* Header info */}
-      <div className="absolute top-4 left-4 bg-gray-800/80 rounded-lg px-4 py-2 flex items-center gap-4">
+      <div className="absolute top-4 left-4 bg-white/10 backdrop-blur rounded-lg px-4 py-2 flex items-center gap-4">
         <span className="text-white font-medium">{formatDate(snapshot.date)}</span>
-        <span className="text-gray-400 text-sm hidden md:inline">{snapshot.url}</span>
+        <span className="text-white/60 text-sm hidden md:inline">{snapshot.url}</span>
       </div>
 
       {/* Zoom controls */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-gray-800/80 rounded-lg px-4 py-2 flex items-center gap-3">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur rounded-lg px-4 py-2 flex items-center gap-3">
         <button
           onClick={() => setScale(s => Math.max(s - 0.25, 0.5))}
-          className="p-1 hover:bg-gray-700 rounded transition-colors"
+          className="p-1 hover:bg-white/10 text-white rounded transition-colors"
           title="Zoom out (-)"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
         </button>
-        <span className="text-sm text-gray-300 min-w-[4rem] text-center">{Math.round(scale * 100)}%</span>
+        <span className="text-sm text-white/80 min-w-[4rem] text-center">{Math.round(scale * 100)}%</span>
         <button
           onClick={() => setScale(s => Math.min(s + 0.25, 3))}
-          className="p-1 hover:bg-gray-700 rounded transition-colors"
+          className="p-1 hover:bg-white/10 text-white rounded transition-colors"
           title="Zoom in (+)"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </button>
-        <div className="w-px h-5 bg-gray-600"></div>
+        <div className="w-px h-5 bg-white/20"></div>
         <button
           onClick={() => setScale(1)}
-          className="p-1 hover:bg-gray-700 rounded transition-colors text-sm text-gray-300"
+          className="p-1 hover:bg-white/10 rounded transition-colors text-sm text-white/80"
           title="Reset zoom (0)"
         >
           Reset
         </button>
-        <div className="w-px h-5 bg-gray-600"></div>
+        <div className="w-px h-5 bg-white/20"></div>
         <a
           href={getWaybackUrl()}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-tb-accent hover:text-tb-accent-light text-sm transition-colors"
+          className="flex items-center gap-1 text-tb-accent-light hover:text-white text-sm transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -136,27 +136,27 @@ export function ImageZoomModal({ snapshot, onClose }: ImageZoomModalProps) {
         >
           {/* Loading skeleton */}
           {loading && !error && (
-            <div className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center min-w-[600px] min-h-[400px]">
+            <div className="absolute inset-0 bg-gray-200 rounded-lg flex items-center justify-center min-w-[600px] min-h-[400px]">
               <div className="flex flex-col items-center gap-3">
                 <svg className="w-10 h-10 animate-spin text-tb-accent" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
-                <span className="text-gray-400 text-sm">Loading full snapshot...</span>
+                <span className="text-gray-500 text-sm">Loading full snapshot...</span>
               </div>
             </div>
           )}
 
           {/* Error state */}
           {error && (
-            <div className="bg-gray-800 rounded-lg p-12 text-center min-w-[400px]">
+            <div className="bg-white rounded-lg p-12 text-center min-w-[400px]">
               <div className="text-5xl mb-4">🖼️</div>
-              <p className="text-gray-400 mb-4">Preview not available</p>
+              <p className="text-gray-500 mb-4">Preview not available</p>
               <a
                 href={getWaybackUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-tb-accent hover:bg-tb-accent-light rounded-lg font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-tb-accent hover:bg-tb-accent-light rounded-lg font-medium text-white transition-colors"
               >
                 View on Wayback Machine
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

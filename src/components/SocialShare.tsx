@@ -22,7 +22,6 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
     ? `${window.location.origin}?url=${encodeURIComponent(url)}&snapshot=${currentIndex}`
     : '';
 
-  const currentSnapshot = snapshots[currentIndex];
   const oldest = snapshots[snapshots.length - 1];
   const yearSpan = snapshots[0].date.getFullYear() - oldest.date.getFullYear();
 
@@ -35,7 +34,6 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback
       const input = document.createElement('input');
       input.value = shareUrl;
       document.body.appendChild(input);
@@ -83,8 +81,8 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
         onClick={handleCopyLink}
         className={`p-2 rounded-lg transition-all ${
           copied 
-            ? 'bg-green-500/20 text-green-400' 
-            : 'bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white'
+            ? 'bg-green-50 text-green-600 border border-green-200' 
+            : 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900'
         }`}
         title={copied ? 'Copied!' : 'Copy link'}
       >
@@ -102,7 +100,7 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
       {/* Twitter/X */}
       <button
         onClick={handleTwitterShare}
-        className="p-2 bg-gray-700/50 hover:bg-[#1DA1F2]/20 text-gray-300 hover:text-[#1DA1F2] rounded-lg transition-all"
+        className="p-2 bg-gray-100 hover:bg-[#1DA1F2]/10 text-gray-500 hover:text-[#1DA1F2] rounded-lg transition-all"
         title="Share on X/Twitter"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -113,7 +111,7 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
       {/* LinkedIn */}
       <button
         onClick={handleLinkedInShare}
-        className="p-2 bg-gray-700/50 hover:bg-[#0A66C2]/20 text-gray-300 hover:text-[#0A66C2] rounded-lg transition-all"
+        className="p-2 bg-gray-100 hover:bg-[#0A66C2]/10 text-gray-500 hover:text-[#0A66C2] rounded-lg transition-all"
         title="Share on LinkedIn"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -124,7 +122,7 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
       {/* Reddit */}
       <button
         onClick={handleRedditShare}
-        className="p-2 bg-gray-700/50 hover:bg-[#FF4500]/20 text-gray-300 hover:text-[#FF4500] rounded-lg transition-all"
+        className="p-2 bg-gray-100 hover:bg-[#FF4500]/10 text-gray-500 hover:text-[#FF4500] rounded-lg transition-all"
         title="Share on Reddit"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -136,7 +134,7 @@ export function SocialShare({ url, snapshots, currentIndex }: SocialShareProps) 
       {'share' in navigator && (
         <button
           onClick={handleNativeShare}
-          className="p-2 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white rounded-lg transition-all md:hidden"
+          className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900 rounded-lg transition-all md:hidden"
           title="Share"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

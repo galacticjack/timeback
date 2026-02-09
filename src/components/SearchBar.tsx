@@ -31,14 +31,14 @@ export function SearchBar({ onSearch, loading }: SearchBarProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Enter any website URL (e.g., apple.com)"
-          className="w-full pl-12 pr-32 py-4 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-tb-accent focus:ring-1 focus:ring-tb-accent transition-colors"
+          className="w-full pl-12 pr-32 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-tb-accent focus:ring-1 focus:ring-tb-accent transition-colors shadow-sm"
           disabled={loading}
         />
         
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          className="absolute right-2 px-6 py-2 bg-tb-accent hover:bg-tb-accent-light disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg font-medium text-white transition-colors"
+          className="absolute right-2 px-6 py-2 bg-tb-accent hover:bg-tb-accent-light disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg font-medium text-white transition-colors"
         >
           {loading ? (
             <span className="flex items-center gap-2">

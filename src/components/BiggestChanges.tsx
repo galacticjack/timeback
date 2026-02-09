@@ -35,11 +35,8 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
     setLoading(true);
     
     try {
-      // For now, use heuristic-based detection
-      // In production, this would call an AI endpoint
       const moments: EvolutionMoment[] = [];
       
-      // Detect potential redesigns by looking at year gaps
       const years = new Set<number>();
       let lastYear = -1;
       
@@ -47,7 +44,6 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
         const year = snapshots[i].date.getFullYear();
         
         if (lastYear !== -1 && year !== lastYear) {
-          // Year boundary - potential significant change
           const yearGap = year - lastYear;
           
           if (yearGap >= 2 || (years.size > 0 && !years.has(year))) {
@@ -97,7 +93,6 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
         lastYear = year;
       }
       
-      // Add the very first snapshot as "origin"
       if (snapshots.length > 0) {
         moments.push({
           index: snapshots.length - 1,
@@ -109,7 +104,6 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
         });
       }
       
-      // Sort by confidence and take top 5
       const topMoments = moments
         .sort((a, b) => b.confidence - a.confidence)
         .slice(0, 5);
@@ -171,17 +165,17 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
   if (snapshots.length < 3) return null;
 
   return (
-    <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/50 rounded-xl p-6">
+    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-yellow-500/10 rounded-lg">
-            <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-2 bg-yellow-50 rounded-lg">
+            <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-white">Biggest Changes</h3>
-            <p className="text-sm text-gray-400">Key evolution moments detected</p>
+            <h3 className="font-semibold text-gray-900">Biggest Changes</h3>
+            <p className="text-sm text-gray-500">Key evolution moments detected</p>
           </div>
         </div>
         
@@ -189,7 +183,7 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
           <button
             onClick={analyzeEvolution}
             disabled={loading}
-            className="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border border-yellow-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
           >
             {loading ? (
               <>
@@ -217,7 +211,7 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
             <button
               key={`${moment.index}-${idx}`}
               onClick={() => onSelect(moment.index)}
-              className="w-full text-left p-4 bg-gray-800/50 hover:bg-gray-700/50 rounded-xl transition-colors group"
+              className="w-full text-left p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group border border-transparent hover:border-gray-200"
             >
               <div className="flex items-start gap-4">
                 <div className={`p-2 bg-gradient-to-br ${getTypeColor(moment.type)} rounded-lg text-white shrink-0`}>
@@ -225,29 +219,29 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-medium text-white group-hover:text-tb-accent transition-colors truncate">
+                    <h4 className="font-medium text-gray-900 group-hover:text-tb-accent transition-colors truncate">
                       {moment.title}
                     </h4>
-                    <span className="text-xs text-gray-500 shrink-0">
+                    <span className="text-xs text-gray-400 shrink-0">
                       {moment.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-400 mt-1 line-clamp-2">
+                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                     {moment.description}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
-                    <div className="h-1 flex-1 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden">
                       <div 
                         className={`h-full bg-gradient-to-r ${getTypeColor(moment.type)}`}
                         style={{ width: `${moment.confidence * 100}%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       {Math.round(moment.confidence * 100)}% confidence
                     </span>
                   </div>
                 </div>
-                <svg className="w-5 h-5 text-gray-500 group-hover:text-tb-accent transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-400 group-hover:text-tb-accent transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -257,7 +251,7 @@ export function BiggestChanges({ snapshots, url, onSelect }: BiggestChangesProps
       )}
 
       {analyzed && evolutionMoments.length === 0 && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-gray-500">
           <p>No significant evolution moments detected.</p>
           <p className="text-sm mt-1">The site may have remained consistent over time.</p>
         </div>

@@ -53,11 +53,11 @@ export function UseCases({ onExampleClick }: UseCasesProps) {
   return (
     <section className="py-12 md:py-16">
       <div className="text-center mb-10 md:mb-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
           What Can You Discover?
         </h2>
-        <p className="text-gray-400 max-w-2xl mx-auto">
-          TimeBack isn't just nostalgia — it's a powerful research tool for anyone who needs to understand how the web evolves.
+        <p className="text-gray-500 max-w-2xl mx-auto">
+          TimeBack isn&apos;t just nostalgia — it&apos;s a powerful research tool for anyone who needs to understand how the web evolves.
         </p>
       </div>
 
@@ -65,21 +65,21 @@ export function UseCases({ onExampleClick }: UseCasesProps) {
         {useCases.map((useCase, index) => (
           <div 
             key={index}
-            className="group bg-gradient-to-b from-gray-800/50 to-gray-900/50 border border-gray-700/50 rounded-xl p-6 hover:border-gray-600/50 transition-all hover:shadow-xl hover:shadow-gray-900/50"
+            className="group bg-white border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all hover:shadow-lg"
           >
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${useCase.color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform`}>
               {useCase.icon}
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {useCase.title}
             </h3>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-gray-500 text-sm mb-4">
               {useCase.description}
             </p>
             {onExampleClick && useCase.example !== 'any startup' && useCase.example !== 'terms of service pages' && (
               <button
                 onClick={() => onExampleClick(useCase.example)}
-                className="text-sm text-tb-accent hover:text-white transition-colors flex items-center gap-1"
+                className="text-sm text-tb-accent hover:text-gray-900 transition-colors flex items-center gap-1"
               >
                 Try {useCase.example}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,6 @@ export function UseCases({ onExampleClick }: UseCasesProps) {
   );
 }
 
-// Testimonials placeholder for future
 export function Testimonials() {
   const testimonials = [
     {
@@ -120,10 +119,10 @@ export function Testimonials() {
   return (
     <section className="py-12 md:py-16">
       <div className="text-center mb-10 md:mb-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
           What People Are Saying
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-500">
           Join thousands of researchers, designers, and analysts using TimeBack.
         </p>
       </div>
@@ -132,15 +131,15 @@ export function Testimonials() {
         {testimonials.map((testimonial, index) => (
           <div 
             key={index}
-            className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/50 rounded-xl p-6"
+            className="bg-white border border-gray-200 rounded-xl p-6"
           >
             <div className="text-4xl mb-4">{testimonial.avatar}</div>
-            <blockquote className="text-gray-300 mb-4">
-              "{testimonial.quote}"
+            <blockquote className="text-gray-600 mb-4">
+              &ldquo;{testimonial.quote}&rdquo;
             </blockquote>
             <div className="text-sm">
-              <div className="font-medium text-white">{testimonial.author}</div>
-              <div className="text-gray-500">{testimonial.company}</div>
+              <div className="font-medium text-gray-900">{testimonial.author}</div>
+              <div className="text-gray-400">{testimonial.company}</div>
             </div>
           </div>
         ))}
@@ -148,21 +147,21 @@ export function Testimonials() {
 
       {/* Stats */}
       <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-        <div className="text-center p-6 bg-gray-800/30 rounded-xl">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-100">
           <div className="text-3xl md:text-4xl font-bold text-tb-accent">850B+</div>
-          <div className="text-sm text-gray-400 mt-1">Pages Archived</div>
+          <div className="text-sm text-gray-500 mt-1">Pages Archived</div>
         </div>
-        <div className="text-center p-6 bg-gray-800/30 rounded-xl">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-100">
           <div className="text-3xl md:text-4xl font-bold text-tb-accent">25+</div>
-          <div className="text-sm text-gray-400 mt-1">Years of History</div>
+          <div className="text-sm text-gray-500 mt-1">Years of History</div>
         </div>
-        <div className="text-center p-6 bg-gray-800/30 rounded-xl">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-100">
           <div className="text-3xl md:text-4xl font-bold text-tb-accent">Free</div>
-          <div className="text-sm text-gray-400 mt-1">No Signup Required</div>
+          <div className="text-sm text-gray-500 mt-1">No Signup Required</div>
         </div>
-        <div className="text-center p-6 bg-gray-800/30 rounded-xl">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-100">
           <div className="text-3xl md:text-4xl font-bold text-tb-accent">AI</div>
-          <div className="text-sm text-gray-400 mt-1">Powered Insights</div>
+          <div className="text-sm text-gray-500 mt-1">Powered Insights</div>
         </div>
       </div>
     </section>
