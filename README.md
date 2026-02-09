@@ -31,12 +31,14 @@
 - **Collapsible Analysis Sections** - Design, Content, Business insights organized
 
 ### UX Features
-- **Keyboard Navigation** - Arrow keys to navigate, Space to play/pause
+- **Keyboard Navigation** - Arrow keys to navigate, Space to play/pause, C for compare mode
 - **Year Markers** - Timeline shows year indicators
 - **Quick Jump** - Jump to oldest/newest with one click
 - **Loading States** - Smooth loading indicators
 - **Error Handling** - Graceful fallbacks when previews fail
-- **Example Sites** - Pre-loaded popular sites to try
+- **Popular Sites Showcase** - Pre-loaded iconic sites with descriptions
+- **URL Sharing** - Deep links to specific comparisons (copy share link)
+- **Mobile Optimized** - Touch-friendly slider, horizontal scroll grids, responsive layouts
 
 ### Design
 - **Dark Theme** - Easy on the eyes, perfect for exploration
@@ -134,9 +136,14 @@ Generates AI-powered insights about a website's evolution.
 
 | Key | Action |
 |-----|--------|
-| `←` | Previous snapshot |
-| `→` | Next snapshot |
+| `←` / `→` | Navigate snapshots |
 | `Space` | Play/Pause auto-rewind |
+| `C` | Toggle compare mode |
+| `Home` | Jump to oldest |
+| `End` | Jump to newest |
+| `Tab` | Switch compare panels |
+| `1-4` | View modes (in compare) |
+| `Esc` | Exit compare/modal |
 
 ## Roadmap
 
@@ -146,8 +153,10 @@ Generates AI-powered insights about a website's evolution.
 - [x] Export reports (Markdown/HTML/PDF) ✅ (Feb 2026)
 - [x] AI result caching ✅ (Feb 2026)
 - [x] Fun facts during loading ✅ (Feb 2026)
+- [x] URL sharing / deep links ✅ (Feb 2026)
+- [x] Mobile responsive + touch support ✅ (Feb 2026)
+- [x] Popular sites showcase ✅ (Feb 2026)
 - [ ] Screenshot thumbnails
-- [ ] Share specific moments
 - [ ] Export timeline as video
 - [ ] Browser extension
 - [ ] API for developers
