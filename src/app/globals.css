@@ -49,8 +49,8 @@
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
 }
 
-/* Smooth transitions */
-* {
+/* Smooth transitions - exclude from animations */
+*:not(.skeleton):not([class*="animate-"]) {
   transition-property: color, background-color, border-color, opacity, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
@@ -68,16 +68,23 @@ iframe {
   background: #0a0a0f;
 }
 
-/* Loading skeleton */
+/* Loading skeleton - enhanced shimmer effect */
 .skeleton {
-  background: linear-gradient(90deg, #1f1f23 25%, #2a2a30 50%, #1f1f23 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  background: linear-gradient(
+    90deg,
+    #1f1f23 0%,
+    #1f1f23 40%,
+    #2a2a30 50%,
+    #1f1f23 60%,
+    #1f1f23 100%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 /* Glow effects */
@@ -90,4 +97,119 @@ iframe {
   background: rgba(10, 10, 15, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  /* Reduce motion on mobile for battery */
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton {
+      animation: none;
+      background: #1f1f23;
+    }
+  }
+  
+  /* Touch-friendly tap targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Smaller slider thumb on mobile */
+  .slider-thumb::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .slider-thumb::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Hide scrollbar on mobile */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Image loading states */
+.image-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  animation: imageShimmer 1.5s infinite;
+}
+
+@keyframes imageShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Fade in animation for loaded images */
+.image-loaded {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Zoom modal styles */
+.zoom-modal-enter {
+  animation: zoomIn 0.2s ease-out;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Improve touch scrolling in iframes */
+iframe {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border-gray-700 {
+    border-color: #a1a1aa;
+  }
+  
+  .text-gray-400,
+  .text-gray-500 {
+    color: #d4d4d8;
+  }
+}
+
+/* Print styles - hide interactive elements */
+@media print {
+  .slider-thumb,
+  button,
+  iframe {
+    display: none !important;
+  }
 }

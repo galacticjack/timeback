@@ -1,9 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +11,25 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Use GPT-4 to analyze the changes
+    const openaiKey = process.env.OPENAI_API_KEY
+    
+    if (!openaiKey) {
+      // Return demo analysis if no API key
+      return NextResponse.json({
+        analysis: {
+          summary: `Comparing ${url} between ${date1} and ${date2}. AI-powered analysis requires an OpenAI API key.`,
+          keyChanges: [
+            'Configure OPENAI_API_KEY environment variable for detailed AI analysis',
+            'Visual comparison is available in the Compare view above',
+            'Use side-by-side, slider, or overlay modes to spot differences'
+          ],
+          designChanges: ['Visual comparison available without API key'],
+          contentChanges: ['Check the archived snapshots directly for content differences'],
+          businessInsights: ['Add OPENAI_API_KEY for AI-powered business insights']
+        }
+      })
+    }
+    
     const prompt = `You are analyzing the evolution of a website over time. 
 
 Website: ${url}
@@ -47,15 +60,27 @@ Format your response as JSON with this structure:
 
 Be specific and insightful. Consider industry context and typical patterns of website evolution.`
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-      temperature: 0.7,
-      max_tokens: 1000
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openaiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
     })
-    
-    const analysis = JSON.parse(completion.choices[0].message.content || '{}')
+
+    if (!response.ok) {
+      throw new Error('OpenAI API error')
+    }
+
+    const data = await response.json()
+    const analysis = JSON.parse(data.choices[0]?.message?.content || '{}')
     
     return NextResponse.json({ analysis })
   } catch (error) {

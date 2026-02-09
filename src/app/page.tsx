@@ -6,6 +6,7 @@ import { VisualRewind } from '@/components/VisualRewind';
 import { AIInsights } from '@/components/AIInsights';
 import { SnapshotCard } from '@/components/SnapshotCard';
 import { ComparisonView } from '@/components/ComparisonView';
+import { ImageZoomModal } from '@/components/ImageZoomModal';
 
 interface Snapshot {
   timestamp: string;
@@ -31,6 +32,7 @@ export default function Home() {
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('rewind');
   const [compareSelection, setCompareSelection] = useState<CompareSelection>({});
+  const [zoomSnapshot, setZoomSnapshot] = useState<Snapshot | null>(null);
 
   const fetchSnapshots = async (searchUrl: string) => {
     setLoading(true);
@@ -149,25 +151,25 @@ export default function Home() {
       {snapshots.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 pb-20">
           {/* Stats Bar with Mode Toggle */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-8 text-sm">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-4 md:gap-8 text-sm">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">{snapshots.length}</div>
-                <div className="text-gray-500">Snapshots</div>
+                <div className="text-xl md:text-2xl font-bold text-white">{snapshots.length}</div>
+                <div className="text-gray-500 text-xs md:text-sm">Snapshots</div>
               </div>
               <div className="w-px h-8 bg-gray-700"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl md:text-2xl font-bold text-white">
                   {snapshots[snapshots.length - 1].date.getFullYear()}
                 </div>
-                <div className="text-gray-500">Oldest</div>
+                <div className="text-gray-500 text-xs md:text-sm">Oldest</div>
               </div>
               <div className="w-px h-8 bg-gray-700"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl md:text-2xl font-bold text-white">
                   {snapshots[0].date.getFullYear()}
                 </div>
-                <div className="text-gray-500">Newest</div>
+                <div className="text-gray-500 text-xs md:text-sm">Newest</div>
               </div>
             </div>
             
@@ -175,7 +177,7 @@ export default function Home() {
             <div className="flex items-center gap-2 bg-gray-800/50 rounded-xl p-1.5">
               <button
                 onClick={() => setViewMode('rewind')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   viewMode === 'rewind'
                     ? 'bg-tb-accent text-white shadow-lg shadow-tb-accent/25'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
@@ -184,11 +186,11 @@ export default function Home() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Rewind
+                <span className="hidden sm:inline">Rewind</span>
               </button>
               <button
                 onClick={() => setViewMode('compare')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   viewMode === 'compare'
                     ? 'bg-tb-accent text-white shadow-lg shadow-tb-accent/25'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
@@ -197,7 +199,7 @@ export default function Home() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                 </svg>
-                Compare
+                <span className="hidden sm:inline">Compare</span>
               </button>
             </div>
           </div>
@@ -233,8 +235,15 @@ export default function Home() {
           
           {/* Snapshot Grid */}
           <div className="mt-12">
-            <h2 className="text-xl font-semibold mb-6 text-gray-300">All Snapshots</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-300">All Snapshots</h2>
+              <span className="text-sm text-gray-500">
+                Showing {Math.min(20, snapshots.length)} of {snapshots.length}
+              </span>
+            </div>
+            
+            {/* Responsive grid - fewer columns on mobile */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
               {snapshots.slice(0, 20).map((snapshot, index) => (
                 <SnapshotCard
                   key={snapshot.timestamp}
@@ -242,6 +251,7 @@ export default function Home() {
                   isSelected={index === currentIndex}
                   onClick={() => setCurrentIndex(index)}
                   index={index}
+                  onZoom={() => setZoomSnapshot(snapshot)}
                   onCompare={() => {
                     // Compare current viewed snapshot with this one
                     setCompareSelection({
@@ -253,6 +263,18 @@ export default function Home() {
                 />
               ))}
             </div>
+
+            {/* Load more button if there are more snapshots */}
+            {snapshots.length > 20 && (
+              <div className="mt-8 text-center">
+                <p className="text-gray-500 text-sm mb-2">
+                  {snapshots.length - 20} more snapshots available
+                </p>
+                <p className="text-gray-600 text-xs">
+                  Use the timeline slider above to navigate all snapshots
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -281,12 +303,12 @@ export default function Home() {
           {/* Example URLs */}
           <div className="mt-12 text-center">
             <p className="text-gray-500 mb-4">Try these popular sites:</p>
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-3">
               {['apple.com', 'google.com', 'amazon.com', 'twitter.com', 'facebook.com'].map(site => (
                 <button
                   key={site}
                   onClick={() => fetchSnapshots(site)}
-                  className="px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors"
+                  className="px-3 md:px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors"
                 >
                   {site}
                 </button>
@@ -297,9 +319,18 @@ export default function Home() {
       )}
       
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-8 text-center text-gray-500 text-sm">
+      <footer className="border-t border-gray-800 py-8 text-center text-gray-500 text-sm px-4">
         <p>Built with the Wayback Machine API. Powered by AI insights.</p>
+        <p className="mt-2 text-xs text-gray-600">
+          Tip: Click any snapshot to zoom in. Use +/- to adjust zoom level.
+        </p>
       </footer>
+
+      {/* Image Zoom Modal */}
+      <ImageZoomModal 
+        snapshot={zoomSnapshot} 
+        onClose={() => setZoomSnapshot(null)} 
+      />
     </main>
   );
 }
