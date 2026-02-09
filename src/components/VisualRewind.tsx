@@ -135,23 +135,23 @@ export function VisualRewind({ snapshots, currentIndex, onIndexChange }: VisualR
       </div>
       
       {/* Preview Window */}
-      <div className="relative bg-gray-900 rounded-xl overflow-hidden border border-gray-700 mb-6">
+      <div className="relative bg-gray-900 rounded-xl overflow-hidden border border-gray-700 mb-4 md:mb-6">
         {/* Browser Chrome */}
-        <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+        <div className="bg-gray-800 px-3 md:px-4 py-2 flex items-center gap-2 border-b border-gray-700">
           <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+            <div className="w-2.5 md:w-3 h-2.5 md:h-3 rounded-full bg-red-500/80"></div>
+            <div className="w-2.5 md:w-3 h-2.5 md:h-3 rounded-full bg-yellow-500/80"></div>
+            <div className="w-2.5 md:w-3 h-2.5 md:h-3 rounded-full bg-green-500/80"></div>
           </div>
-          <div className="flex-1 ml-4">
-            <div className="bg-gray-700 rounded px-3 py-1 text-xs text-gray-400 truncate max-w-md">
+          <div className="flex-1 ml-2 md:ml-4 min-w-0">
+            <div className="bg-gray-700 rounded px-2 md:px-3 py-1 text-[10px] md:text-xs text-gray-400 truncate">
               {currentSnapshot.url}
             </div>
           </div>
         </div>
         
         {/* Screenshot/Iframe */}
-        <div className="relative aspect-[16/10] bg-gray-900">
+        <div className="relative aspect-[4/3] md:aspect-[16/10] bg-gray-900">
           {!imageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex flex-col items-center gap-3">
@@ -196,65 +196,71 @@ export function VisualRewind({ snapshots, currentIndex, onIndexChange }: VisualR
       </div>
       
       {/* Timeline Slider */}
-      <div className="space-y-3">
-        {/* Year markers */}
-        <div className="flex justify-between px-2">
+      <div className="space-y-2 md:space-y-3">
+        {/* Year markers - hidden on very small screens */}
+        <div className="hidden sm:flex justify-between px-2">
           {getYearMarkers(snapshots).map((year, i) => (
             <span key={i} className="text-xs font-medium text-gray-400">{year}</span>
           ))}
         </div>
         
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-[10px] md:text-xs text-gray-500 px-1">
           <span>{formatDate(snapshots[snapshots.length - 1].date)}</span>
+          <span className="text-gray-400 text-center flex-1 hidden sm:block">
+            Drag to navigate through time
+          </span>
           <span>{formatDate(snapshots[0].date)}</span>
         </div>
         
-        <div className="relative">
+        <div className="relative py-2">
           <input
             type="range"
             min={0}
             max={snapshots.length - 1}
             value={currentIndex}
             onChange={(e) => onIndexChange(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
+            className="w-full h-2 md:h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb touch-none"
           />
           
-          {/* Timeline Markers */}
-          <div className="absolute top-0 left-0 right-0 h-2 flex items-center pointer-events-none">
-            {snapshots.map((_, index) => (
-              <div
-                key={index}
-                className={`absolute w-1 h-1 rounded-full ${
-                  index === currentIndex ? 'bg-tb-accent w-2 h-2' : 'bg-gray-500'
-                }`}
-                style={{ left: `${(index / (snapshots.length - 1)) * 100}%`, transform: 'translateX(-50%)' }}
-              />
-            ))}
+          {/* Timeline Markers - reduced on mobile */}
+          <div className="absolute top-2 left-0 right-0 h-2 flex items-center pointer-events-none">
+            {snapshots.filter((_, i) => i % Math.ceil(snapshots.length / 30) === 0 || i === currentIndex).map((_, index) => {
+              const actualIndex = index * Math.ceil(snapshots.length / 30);
+              return (
+                <div
+                  key={actualIndex}
+                  className={`absolute w-1 h-1 rounded-full ${
+                    actualIndex === currentIndex ? 'bg-tb-accent w-2 h-2' : 'bg-gray-500'
+                  }`}
+                  style={{ left: `${(actualIndex / (snapshots.length - 1)) * 100}%`, transform: 'translateX(-50%)' }}
+                />
+              );
+            })}
           </div>
         </div>
         
-        {/* Quick Jump Buttons */}
-        <div className="flex justify-center gap-2 mt-4">
+        {/* Quick Jump Buttons - responsive layout */}
+        <div className="flex justify-center items-center gap-1.5 md:gap-2 mt-2 md:mt-4">
           <button
             onClick={() => onIndexChange(Math.max(0, currentIndex - 1))}
             disabled={currentIndex === 0}
-            className="p-2 bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg transition-colors"
+            className="p-2 md:p-2 bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg transition-colors active:scale-95"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           
           <button
             onClick={() => onIndexChange(snapshots.length - 1)}
-            className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors"
+            className="px-3 md:px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-xs md:text-sm transition-colors active:scale-95"
           >
             Oldest
           </button>
           
           <button
             onClick={() => onIndexChange(0)}
-            className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-sm transition-colors"
+            className="px-3 md:px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-xs md:text-sm transition-colors active:scale-95"
           >
             Newest
           </button>
@@ -262,13 +268,18 @@ export function VisualRewind({ snapshots, currentIndex, onIndexChange }: VisualR
           <button
             onClick={() => onIndexChange(Math.min(snapshots.length - 1, currentIndex + 1))}
             disabled={currentIndex === snapshots.length - 1}
-            className="p-2 bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg transition-colors"
+            className="p-2 md:p-2 bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg transition-colors active:scale-95"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
+        
+        {/* Mobile swipe hint */}
+        <p className="text-center text-xs text-gray-500 mt-2 md:hidden">
+          Swipe slider or tap arrows to navigate
+        </p>
       </div>
     </div>
   );

@@ -339,7 +339,7 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
         )}
         
         {viewMode === 'slider' && (
-          <div className="relative h-[500px]">
+          <div className="relative h-[400px] md:h-[500px]">
             {/* Later (background) */}
             <div className="absolute inset-0">
               <iframe
@@ -371,9 +371,9 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
               </div>
             </div>
             
-            {/* Slider handle */}
+            {/* Slider handle - touch and mouse support */}
             <div 
-              className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize z-10"
+              className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize z-10 touch-none"
               style={{ left: `${sliderPosition}%` }}
               onMouseDown={(e) => {
                 const startX = e.clientX;
@@ -394,12 +394,38 @@ export function ComparisonView({ snapshots, onBack, initialSnapshot1, initialSna
                 document.addEventListener('mousemove', handleMouseMove);
                 document.addEventListener('mouseup', handleMouseUp);
               }}
+              onTouchStart={(e) => {
+                const touch = e.touches[0];
+                const startX = touch.clientX;
+                const startPos = sliderPosition;
+                
+                const handleTouchMove = (e: TouchEvent) => {
+                  if (!containerRef.current) return;
+                  const touch = e.touches[0];
+                  const rect = containerRef.current.getBoundingClientRect();
+                  const delta = ((touch.clientX - startX) / rect.width) * 100;
+                  setSliderPosition(Math.max(5, Math.min(95, startPos + delta)));
+                };
+                
+                const handleTouchEnd = () => {
+                  document.removeEventListener('touchmove', handleTouchMove);
+                  document.removeEventListener('touchend', handleTouchEnd);
+                };
+                
+                document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                document.addEventListener('touchend', handleTouchEnd);
+              }}
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-gray-200">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-gray-200 active:scale-110 transition-transform">
                 <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                 </svg>
               </div>
+            </div>
+            
+            {/* Touch hint on mobile */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full md:hidden">
+              ← Drag to compare →
             </div>
           </div>
         )}
