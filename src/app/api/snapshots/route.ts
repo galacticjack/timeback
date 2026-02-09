@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   }
   
   try {
-    const snapshots = await fetchSnapshots(url, 30)
+    const snapshots = await fetchSnapshots(url, 100)
     
     return NextResponse.json({ 
       snapshots,

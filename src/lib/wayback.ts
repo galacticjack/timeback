@@ -85,16 +85,16 @@ async function fetchWithRetry(url: string, maxRetries: number = 2): Promise<Resp
 }
 
 // Fetch snapshots from CDX API
-export async function fetchSnapshots(url: string, limit: number = 30): Promise<Snapshot[]> {
+export async function fetchSnapshots(url: string, limit: number = 100): Promise<Snapshot[]> {
   const normalized = normalizeUrl(url)
   
-  // CDX API endpoint — collapse by month (timestamp:6) to reduce results and avoid rate limits
+  // CDX API endpoint — collapse by year (timestamp:4) for broad history, then pick best per year
   const cdxUrl = new URL('https://web.archive.org/cdx/search/cdx')
   cdxUrl.searchParams.set('url', normalized)
   cdxUrl.searchParams.set('output', 'json')
   cdxUrl.searchParams.set('limit', limit.toString())
   cdxUrl.searchParams.set('filter', 'statuscode:200') // Only successful captures
-  cdxUrl.searchParams.set('collapse', 'timestamp:6') // One per month (YYYYMM) — fewer results, less rate limiting
+  cdxUrl.searchParams.set('collapse', 'timestamp:4') // One per year (YYYY) — gets full history range
   cdxUrl.searchParams.set('fl', 'timestamp,original,mimetype,statuscode') // Fields to return
   
   const response = await fetchWithRetry(cdxUrl.toString())
