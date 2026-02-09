@@ -8,6 +8,15 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        // Proxy CDX API to avoid CORS issues
+        source: '/api/cdx/:path*',
+        destination: 'https://web.archive.org/cdx/search/:path*',
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

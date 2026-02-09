@@ -30,7 +30,9 @@ export function getScreenshotUrl(timestamp: string, originalUrl: string): string
 export async function fetchSnapshotsClient(url: string, limit: number = 30): Promise<Snapshot[]> {
   const normalized = normalizeUrl(url)
   
-  const cdxUrl = new URL('https://web.archive.org/cdx/search/cdx')
+  // Use our Next.js rewrite proxy to avoid CORS issues
+  // /api/cdx/ proxies to web.archive.org/cdx/search/
+  const cdxUrl = new URL('/api/cdx/cdx', window.location.origin)
   cdxUrl.searchParams.set('url', normalized)
   cdxUrl.searchParams.set('output', 'json')
   cdxUrl.searchParams.set('limit', limit.toString())
